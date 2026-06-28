@@ -94,7 +94,29 @@
   .type.local{background:rgba(127,178,255,.16);color:#cfe0ff}   /* 區間 */
   .dep{font-weight:600;font-size:15px}
   .arr{color:var(--muted)}
-  .dur{font-size:12px;color:#cdd8ea;white-space:nowrap}
+  .dur{font-size:13px;color:#cdd8ea;white-space:nowrap;font-weight:600}
+  /* board top: time + clock */
+  .board-top-r{display:flex;align-items:center;gap:8px}
+  .upd.custom{color:var(--amber);font-weight:600}
+  .clockbtn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line)}
+  .clockbtn:active{transform:scale(.92)}
+  .clockbtn.on{color:#0d1626;background:var(--amber);border-color:var(--amber)}
+  /* two-column train rows */
+  .tlist{display:flex;flex-direction:column}
+  .trow{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06)}
+  .trow:first-child{border-top:0}
+  .tleft{flex:1 1 auto;min-width:0}
+  .tleft .l1{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .tleft .l1 .no{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+  .tleft .l2{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+  .tleft .l2 .dep{font-size:17px}
+  .tleft .l2 .arr{font-size:17px}
+  .tleft .l2 .ar{color:var(--accent);font-weight:700}
+  .tright{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;text-align:right;min-width:104px}
+  .tright .ri{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-variant-numeric:tabular-nums}
+  .tright .rl{font-size:11px;color:var(--muted);font-weight:600}
+  .tright .fare{font-size:14px;font-weight:600;color:#cfe0ff}
   /* custom station autocomplete */
   .ac-list{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:70;
     background:#1c2942;border:1px solid var(--line);border-radius:12px;
@@ -280,6 +302,24 @@
   </div>
 </div>
 
+<!-- ============ TIME QUERY SHEET ============ -->
+<div class="sheet" id="timeSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3>查詢特定時間</h3>
+    <div class="field">
+      <label>顯示此時間以後的班次</label>
+      <input type="time" id="inTime">
+    </div>
+    <div class="acts">
+      <button class="btn-secondary" id="btnTimeNow">回到即時</button>
+      <button class="btn-primary" id="btnTimeApply">套用</button>
+    </div>
+    <div class="hint">設定後所有路線都會顯示該時間之後的班次；按左下角更新鈕即可回到即時。</div>
+  </div>
+</div>
+
 <script>
 "use strict";
 const AUTH_URL="https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token";
@@ -293,6 +333,7 @@ const setJSON=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const getCreds=()=>getJSON(LS.creds,null);
 let presets=getJSON(LS.presets,[]);
 let stations=getJSON(LS.sta,null); // {fetchedAt, list:[{id,name,lat,lon}]}
+let queryTime=null; // null = real time; "HH:mm" = show trains after this time
 
 /* ---------- time helpers (Asia/Taipei) ---------- */
 function taipeiDate(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}
@@ -407,8 +448,22 @@ function typeClass(t){
   if(/區間|區間快/.test(t)) return "local";
   return "";
 }
-// display name without the bracketed part: 自強(3000) -> 自強, 自強(普悠瑪) -> 自強
-function typeDisp(t){return (t||"").replace(/[（(][^）)]*[）)]/g,"").trim();}
+// display label by type: 自強 / 新自強 / 普悠瑪 / 太魯閣 (others: strip brackets)
+function typeDisp(t){
+  t=t||"";
+  if(/太魯閣/.test(t)) return "太魯閣";
+  if(/普悠瑪/.test(t)) return "普悠瑪";
+  if(/新自強|EMU3000|自強.*3000|3000/.test(t)) return "新自強";
+  if(/自強/.test(t)) return "自強";
+  return t.replace(/[（(][^）)]*[）)]/g,"").trim();
+}
+// fare tier of a train type: limited 自強級 / express 莒光級 / local 區間級
+function tierOf(t){
+  t=t||"";
+  if(/普悠瑪|太魯閣|自強|騰雲|3000/.test(t)) return "limited";
+  if(/莒光/.test(t)) return "express";
+  return "local"; // 復興/區間/區間快/普快/普通 皆按區間車票價
+}
 // duration between two HH:mm times, e.g. 30分鐘 / 1小時15分鐘
 function fmtDur(dep,arr){
   const d=toMin(dep),a=toMin(arr);
@@ -452,6 +507,45 @@ async function fetchOD(o,d,date){
   }catch(e){/* v2 fallback optional */}
   return{list:[],raw,ver:"v3+v2"};
 }
+
+/* ---------- fares (cached long-term per OD pair) ---------- */
+// Full-fare prices for one OD obey 自強 > 莒光 > 區間, so rank distinct full fares to tiers.
+function fareTiers(json){
+  const recs=Array.isArray(json)?json:(json&&(json.ODFares||json.Fares))||[];
+  const prices=[];
+  recs.forEach(r=>{
+    const fares=r.Fares||r.Fare||(Array.isArray(r)?r:[]);
+    (Array.isArray(fares)?fares:[]).forEach(f=>{
+      const tt=f.TicketType, p=Number(f.Price);
+      const full=(tt==null)||tt===1||tt==="1"||/全票|成人|Adult/i.test(zh(f.TicketTypeName)||String(tt));
+      if(full&&Number.isFinite(p)) prices.push(p);
+    });
+    if(Number.isFinite(Number(r.Price))) prices.push(Number(r.Price));
+  });
+  const d=[...new Set(prices)].sort((a,b)=>b-a);
+  const t={limited:null,express:null,local:null};
+  if(d.length>=3){t.limited=d[0];t.express=d[1];t.local=d[d.length-1];}
+  else if(d.length===2){t.limited=d[0];t.local=d[1];t.express=null;}
+  else if(d.length===1){t.limited=t.express=t.local=d[0];}
+  return t;
+}
+let fareCache=getJSON("tra.fares",{}); // {"oID-dID":{tiers,t}}
+async function getFare(o,d){
+  const key=o+"-"+d, c=fareCache[key];
+  if(c&&Date.now()-c.t<30*864e5) return c.tiers;
+  try{
+    let json;
+    try{ json=await api(`/v3/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
+    catch(e){ json=await api(`/v2/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
+    const tiers=fareTiers(json);
+    fareCache[key]={tiers,t:Date.now()}; setJSON("tra.fares",fareCache);
+    return tiers;
+  }catch(e){ return (c&&c.tiers)||{limited:null,express:null,local:null}; }
+}
+function fareCell(tiers,type){
+  const p=tiers&&tiers[tierOf(type)];
+  return p?("$"+p):'<span style="color:var(--muted)">—</span>';
+}
 async function loadBoard(card,p,dmap){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
@@ -461,47 +555,53 @@ async function loadBoard(card,p,dmap){
     const list=od.list;
     if(!dmap) dmap=await getDelays(); // 單張卡片更新時才自行取用（已快取）
 
-    const now=toMin(taipeiTime());
-    const up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,10);
+    const cutoff = queryTime!=null ? toMin(queryTime) : toMin(taipeiTime());
+    const up=list.filter(x=>toMin(x.dep)>=cutoff).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,10);
 
-    body.querySelector(".upd").textContent="更新 "+taipeiTime();
     if(!up.length){
-      if(list.length) renderMsg(body,"今日已無後續班次");
+      if(list.length) renderMsg(body, queryTime!=null ? (queryTime+" 之後已無班次") : "今日已無後續班次");
       else if(od.raw>0) renderMsg(body,`收到 ${od.raw} 筆資料但無法解析<br><span style='font-size:13px;color:#7e8ba0'>請把這行字回報給我</span>`);
       else renderMsg(body,`今日查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${date})試試對調起訖站</span>`);
       return;
     }
-    renderRows(body,up,dmap);
+    const tiers=await getFare(p.oID,p.dID).catch(()=>null);
+    renderRows(body,up,dmap,tiers);
   }catch(e){
     body.querySelector(".upd").textContent="";
     renderMsg(body,"⚠️ "+(e.message||"讀取失敗")+"<br><span style='font-size:13px;color:#7e8ba0'>點下方更新鈕重試</span>");
   }
 }
-function boardShell(){
-  return `<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd"></span></div>
-  <div class="board-scroll"><table class="tt"><thead><tr>
-    <th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>時長</th><th>延誤</th>
-  </tr></thead><tbody></tbody></table></div>`;
+const CLOCK_SVG='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+function topBar(){
+  const custom=queryTime!=null;
+  const txt=custom ? (queryTime+" 起") : ("更新 "+taipeiTime());
+  return `<div class="board-top"><span class="ttl">最近 10 班</span>
+    <div class="board-top-r"><span class="upd${custom?' custom':''}">${txt}</span>
+    <button class="clockbtn${custom?' on':''}" aria-label="查詢時間">${CLOCK_SVG}</button></div></div>`;
 }
-function renderRows(board,rows,dmap){
-  let html=`<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd">更新 ${taipeiTime()}</span></div>
-  <div class="board-scroll"><table class="tt"><thead><tr><th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>時長</th><th>延誤</th></tr></thead><tbody>`;
+function boardShell(){
+  return topBar()+`<div class="board-scroll"><div class="tlist"></div></div>`;
+}
+function renderRows(board,rows,dmap,tiers){
+  let html=topBar()+`<div class="board-scroll"><div class="tlist">`;
   rows.forEach(r=>{
-    html+=`<tr>
-      <td class="no">${r.no}</td>
-      <td class="c2"><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></td>
-      <td class="dep">${r.dep||"—"}</td>
-      <td class="arr">${r.arr||"—"}</td>
-      <td class="dur">${fmtDur(r.dep,r.arr)}</td>
-      <td class="delay">${delayCell(dmap[r.no])}</td>
-    </tr>`;
+    html+=`<div class="trow">
+      <div class="tleft">
+        <div class="l1"><span class="no">${r.no}</span><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></div>
+        <div class="l2"><span class="dep">${r.dep||"—"}</span><span class="ar">→</span><span class="arr">${r.arr||"—"}</span></div>
+      </div>
+      <div class="tright">
+        <div class="ri"><span class="rl">時長</span><span class="dur">${fmtDur(r.dep,r.arr)}</span></div>
+        <div class="ri"><span class="rl">延誤</span><span class="delay">${delayCell(dmap[r.no])}</span></div>
+        <div class="ri"><span class="rl">票價</span><span class="fare">${fareCell(tiers,r.type)}</span></div>
+      </div>
+    </div>`;
   });
-  html+="</tbody></table></div>";
+  html+=`</div></div>`;
   board.innerHTML=html;
 }
 function renderMsg(board,m){
-  board.innerHTML=`<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd"></span></div>
-  <div class="board-msg">${m}</div>`;
+  board.innerHTML=topBar()+`<div class="board-msg">${m}</div>`;
 }
 
 /* ---------- build cards ---------- */
@@ -551,10 +651,26 @@ async function refreshAll(){
   }
 }
 
-/* ---------- refresh button ---------- */
+/* ---------- refresh button: also returns to real time ---------- */
 $("#btnRefresh").addEventListener("click",async()=>{
   const b=$("#btnRefresh"); b.classList.add("busy");
+  queryTime=null;            // 回到即時時間
   try{ await refreshAll(); } finally{ b.classList.remove("busy"); }
+});
+
+/* ---------- time query (clock icon on each board) ---------- */
+$("#panels").addEventListener("click",e=>{
+  if(!e.target.closest(".clockbtn"))return;
+  $("#inTime").value = queryTime || taipeiTime();
+  openSheet("timeSheet");
+});
+$("#btnTimeApply").addEventListener("click",async()=>{
+  const v=$("#inTime").value;
+  if(!v) return;
+  queryTime=v; closeSheets(); await refreshAll();
+});
+$("#btnTimeNow").addEventListener("click",async()=>{
+  queryTime=null; closeSheets(); await refreshAll();
 });
 
 /* ---------- add / edit sheet ---------- */
