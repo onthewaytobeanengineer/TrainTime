@@ -106,7 +106,7 @@
   .tlist{display:flex;flex-direction:column}
   .trow{display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
   .trow:first-child{border-top:0}
-  .tleft{flex:0 0 auto;min-width:54px}
+  .tleft{flex:0 0 auto;min-width:56px;text-align:center}
   .tleft .no{font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;line-height:1.15}
   .tleft .ty{margin-top:2px}
   .tmid{flex:1 1 auto;display:flex;align-items:baseline;justify-content:center;gap:14px;font-variant-numeric:tabular-nums}
@@ -119,7 +119,7 @@
   .dly.y{color:#FFDC00}
   .dly.o{color:#FF5F00}
   .dly.na{color:var(--muted);font-weight:600}
-  .tleft .type{background:none;padding:0;font-size:15px;font-weight:600}
+  .tleft .type{display:inline-block;min-width:52px;text-align:center;padding:3px 8px;font-size:13px;font-weight:600;box-sizing:border-box}
   /* custom station autocomplete */
   .ac-list{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:70;
     background:#1c2942;border:1px solid var(--line);border-radius:12px;
@@ -188,6 +188,22 @@
     background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;
   }
   .field input:focus{border-color:var(--accent)}
+  .field select{
+    width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;-webkit-appearance:none;appearance:none;
+  }
+  .field select:focus{border-color:var(--accent)}
+  /* route switcher list */
+  .route-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
+  .route-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);
+    touch-action:none;user-select:none;-webkit-user-select:none;transition:background .15s,border-color .15s}
+  .route-item .ri-grip{color:var(--muted);display:flex;flex:0 0 auto}
+  .route-item .ri-name{font-size:17px;font-weight:600}
+  .route-item .ri-arrow{color:var(--accent);margin:0 5px}
+  .route-item.current{border-color:var(--accent)}
+  .route-item.dragging{background:rgba(127,178,255,.18);border-color:var(--accent);
+    box-shadow:0 14px 30px rgba(0,0,0,.45);position:relative;z-index:5}
   .odrow{display:flex;align-items:flex-end;gap:10px}
   .odrow .field{flex:1;margin-bottom:0}
   .swap{width:44px;height:50px;border-radius:14px;background:var(--glass);border:1px solid var(--line);
@@ -310,16 +326,30 @@
   <div class="mask" data-close></div>
   <div class="panel">
     <div class="grip"></div>
-    <h3>查詢特定時間</h3>
+    <h3>查詢其他時間</h3>
+    <div class="field">
+      <label>查詢日期</label>
+      <select id="inDate"></select>
+    </div>
     <div class="field">
       <label>顯示此時間以後的班次</label>
       <input type="time" id="inTime">
     </div>
     <div class="acts">
-      <button class="btn-secondary" id="btnTimeNow">回到即時</button>
-      <button class="btn-primary" id="btnTimeApply">套用</button>
+      <button class="btn-primary" id="btnTimeApply" style="flex:1">確認</button>
     </div>
-    <div class="hint">設定後所有路線都會顯示該時間之後的班次；按左下角更新鈕即可回到即時。</div>
+    <div class="hint">設定後所有路線都會顯示該時間之後的班次。</div>
+  </div>
+</div>
+
+<!-- ============ ROUTE SWITCHER SHEET ============ -->
+<div class="sheet" id="routeSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3>切換路線</h3>
+    <div id="routeList" class="route-list"></div>
+    <div class="hint">點一下卡片即可切換；長按卡片可上下拖曳調整順序。</div>
   </div>
 </div>
 
@@ -337,6 +367,7 @@ const getCreds=()=>getJSON(LS.creds,null);
 let presets=getJSON(LS.presets,[]);
 let stations=getJSON(LS.sta,null); // {fetchedAt, list:[{id,name,lat,lon}]}
 let queryTime=null; // null = real time; "HH:mm" = show trains after this time
+let queryDate=null; // null = today; "YYYY-MM-DD" = a chosen date within 28 days
 
 /* ---------- time helpers (Asia/Taipei) ---------- */
 function taipeiDate(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}
@@ -517,10 +548,12 @@ async function loadBoard(card,p,dmap){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
   try{
-    const date=taipeiDate();
+    const date=queryDate||taipeiDate();
+    const isToday=(date===taipeiDate());
     const od=await fetchOD(p.oID,p.dID,date);
     const list=od.list;
-    if(!dmap) dmap=await getDelays(); // 單張卡片更新時才自行取用（已快取）
+    if(isToday){ if(!dmap) dmap=await getDelays(); }
+    else dmap={}; // 即時誤點只對「今天」有意義
 
     const cutoff = queryTime!=null ? toMin(queryTime) : toMin(taipeiTime());
     const up=list.filter(x=>toMin(x.dep)>=cutoff).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,10);
@@ -540,9 +573,33 @@ async function loadBoard(card,p,dmap){
 const CLOCK_SVG='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
 const MENU_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
 const CHEV_SVG='<svg viewBox="0 0 34 24" width="32" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l6 6-6 6"></path><path d="M13 6l6 6-6 6"></path><path d="M22 6l6 6-6 6"></path></svg>';
+const DRAG_SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
+const WD=["日","一","二","三","四","五","六"];
+function dateLabelShort(dstr){
+  if(!dstr||dstr===taipeiDate()) return "今天";
+  const [y,mo,da]=dstr.split("-").map(Number);
+  const w=new Date(Date.UTC(y,mo-1,da)).getUTCDay();
+  return `${String(mo).padStart(2,"0")}.${String(da).padStart(2,"0")}(${WD[w]})`;
+}
+function buildDateOptions(){
+  const sel=$("#inDate"); sel.innerHTML="";
+  const [Y,M,D]=taipeiDate().split("-").map(Number);
+  const base=Date.UTC(Y,M-1,D);
+  for(let i=0;i<=28;i++){
+    const dt=new Date(base+i*864e5);
+    const val=`${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;
+    const label=i===0?"今天":`${String(dt.getUTCMonth()+1).padStart(2,"0")}.${String(dt.getUTCDate()).padStart(2,"0")}(${WD[dt.getUTCDay()]})`;
+    const o=document.createElement("option"); o.value=val; o.textContent=label; sel.appendChild(o);
+  }
+}
 function topBar(){
-  const custom=queryTime!=null;
-  const txt=custom ? (queryTime+" 起") : ("更新 "+taipeiTime());
+  const futureDate = queryDate!=null && queryDate!==taipeiDate();
+  const custom = queryTime!=null || futureDate;
+  let txt;
+  if(custom){
+    const dl = futureDate ? dateLabelShort(queryDate)+" " : "";
+    txt = dl + (queryTime||taipeiTime()) + " 起";
+  } else txt = "更新 "+taipeiTime();
   return `<div class="board-top"><span class="ttl">最近 10 班</span>
     <div class="board-top-r"><span class="upd${custom?' custom':''}">${txt}</span>
     <button class="clockbtn${custom?' on':''}" aria-label="查詢時間">${CLOCK_SVG}</button></div></div>`;
@@ -621,24 +678,90 @@ async function refreshAll(){
 /* ---------- refresh button: also returns to real time ---------- */
 $("#btnRefresh").addEventListener("click",async()=>{
   const b=$("#btnRefresh"); b.classList.add("busy");
-  queryTime=null;            // 回到即時時間
+  queryTime=null; queryDate=null;   // 回到即時（今天 + 現在）
   try{ await refreshAll(); } finally{ b.classList.remove("busy"); }
 });
 
-/* ---------- time query (clock icon on each board) ---------- */
+/* ---------- time/date query (clock icon on each board) ---------- */
 $("#panels").addEventListener("click",e=>{
   if(!e.target.closest(".clockbtn"))return;
+  buildDateOptions();
+  $("#inDate").value = queryDate || taipeiDate();
   $("#inTime").value = queryTime || taipeiTime();
   openSheet("timeSheet");
 });
 $("#btnTimeApply").addEventListener("click",async()=>{
-  const v=$("#inTime").value;
-  if(!v) return;
-  queryTime=v; closeSheets(); await refreshAll();
+  const dv=$("#inDate").value, tv=$("#inTime").value;
+  queryDate = (dv && dv!==taipeiDate()) ? dv : null;
+  queryTime = tv || null;
+  closeSheets(); await refreshAll();
 });
-$("#btnTimeNow").addEventListener("click",async()=>{
-  queryTime=null; closeSheets(); await refreshAll();
-});
+
+/* ---------- route switcher (long-press the dots) ---------- */
+function buildRouteList(){
+  const L=$("#routeList"); L.innerHTML="";
+  const cur=activeIndex();
+  presets.forEach((p,i)=>{
+    const el=document.createElement("div");
+    el.className="route-item"+(i===cur?" current":"");
+    el.dataset.idx=i;
+    el.innerHTML=`<span class="ri-grip">${DRAG_SVG}</span><span class="ri-name">${p.oName}<span class="ri-arrow">›</span>${p.dName}</span>`;
+    L.appendChild(el);
+  });
+}
+function openRouteList(){ if(!presets.length)return; buildRouteList(); openSheet("routeSheet"); }
+function goToCard(i){
+  closeSheets();
+  requestAnimationFrame(()=>$("#panels").scrollTo({left:i*$("#panels").clientWidth,behavior:"smooth"}));
+}
+// reorder existing cards (no refetch) to match a new sequence of old indices
+function applyReorder(order){
+  presets=order.map(i=>presets[i]);
+  setJSON(LS.presets,presets);
+  const wrap=$("#panels"); const cards=[...wrap.children];
+  order.forEach(oldI=>wrap.appendChild(cards[oldI]));
+  [...wrap.children].forEach((c,i)=>{c.dataset.i=i;const mb=c.querySelector("[data-menu]");if(mb)mb.dataset.menu=i;});
+  buildDots();
+}
+(function routeDrag(){
+  const L=()=>$("#routeList");
+  let timer=null,el=null,startY=0,moved=false,dragging=false;
+  function reset(){clearTimeout(timer);el=null;moved=false;dragging=false;}
+  L().addEventListener("pointerdown",e=>{
+    const it=e.target.closest(".route-item"); if(!it)return;
+    el=it; startY=e.clientY; moved=false; dragging=false;
+    timer=setTimeout(()=>{dragging=true; it.classList.add("dragging"); if(navigator.vibrate)navigator.vibrate(15);},300);
+  });
+  L().addEventListener("pointermove",e=>{
+    if(!el)return;
+    if(Math.abs(e.clientY-startY)>8) moved=true;
+    if(!dragging){ if(moved) reset(); return; }
+    e.preventDefault();
+    const sibs=[...L().querySelectorAll(".route-item:not(.dragging)")];
+    let target=null;
+    for(const s of sibs){const r=s.getBoundingClientRect(); if(e.clientY < r.top+r.height/2){target=s;break;}}
+    if(target) L().insertBefore(el,target); else L().appendChild(el);
+  });
+  function up(){
+    if(!el){return;}
+    if(dragging){
+      el.classList.remove("dragging");
+      const order=[...L().querySelectorAll(".route-item")].map(x=>+x.dataset.idx);
+      applyReorder(order); buildRouteList();
+    }else if(!moved){
+      goToCard(+el.dataset.idx);
+    }
+    reset();
+  }
+  L().addEventListener("pointerup",up);
+  L().addEventListener("pointercancel",reset);
+})();
+// long-press the dots to open the switcher
+(function dotsPress(){
+  const d=$("#dots"); let t=null;
+  d.addEventListener("pointerdown",()=>{t=setTimeout(()=>{openRouteList(); if(navigator.vibrate)navigator.vibrate(15);},380);});
+  ["pointerup","pointermove","pointercancel","pointerleave"].forEach(ev=>d.addEventListener(ev,()=>clearTimeout(t)));
+})();
 
 /* ---------- add / edit sheet ---------- */
 let editIndex=null;
