@@ -112,6 +112,8 @@
   .tmid{flex:1 1 auto;display:flex;align-items:baseline;justify-content:center;gap:14px;font-variant-numeric:tabular-nums}
   .tmid .dep{font-size:27px;font-weight:700;letter-spacing:.5px}
   .tmid .arr{font-size:27px;font-weight:600;color:var(--muted);letter-spacing:.5px}
+  .tmid .dep.xmid{color:#FF8F3C}
+  .tmid .arr.xmid{color:#FFCB91}
   .tright{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:52px;text-align:right}
   .tright .dur{font-size:16px;font-weight:600;color:#e6edf7;white-space:nowrap}
   .tright .dly{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -544,24 +546,57 @@ async function fetchOD(o,d,date){
   return{list:[],raw,ver:"v3+v2"};
 }
 
+function addDays(dstr,n){
+  const [y,mo,da]=dstr.split("-").map(Number);
+  const dt=new Date(Date.UTC(y,mo-1,da)+n*864e5);
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;
+}
+const normCut=m=>m<240?m+1440:m; // times before 04:00 count as the post-midnight tail
+// service day runs 04:00 → next-day 01:00; returns anchor date, next date, and window cutoff (minutes)
+function serviceWindow(){
+  const today=taipeiDate(), now=toMin(taipeiTime());
+  if(queryDate!=null && queryDate!==today)
+    return {anchor:queryDate, next:addDays(queryDate,1), cut:(queryTime!=null?normCut(toMin(queryTime)):240)};
+  if(queryTime!=null)
+    return {anchor:today, next:addDays(today,1), cut:normCut(toMin(queryTime))};
+  if(now<60) return {anchor:addDays(today,-1), next:today, cut:now+1440}; // 00:00–00:59: tail of yesterday
+  return {anchor:today, next:addDays(today,1), cut:now};
+}
+// map a HH:mm departure to a window-minute within [04:00, 25:00], or null if outside
+function winMin(dep){
+  const m=toMin(dep); if(m<0) return null;
+  if(m>=240) return m;          // 04:00–23:59
+  if(m<=60) return m+1440;      // 00:00–01:00 → 24:00–25:00 (post-midnight)
+  return null;                   // 01:00–04:00 dead zone
+}
 async function loadBoard(card,p,dmap){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
   try{
-    const date=queryDate||taipeiDate();
-    const isToday=(date===taipeiDate());
-    const od=await fetchOD(p.oID,p.dID,date);
-    const list=od.list;
-    if(isToday){ if(!dmap) dmap=await getDelays(); }
-    else dmap={}; // 即時誤點只對「今天」有意義
+    const w=serviceWindow();
+    const isToday=(w.anchor===taipeiDate()||w.next===taipeiDate());
+    const od=await fetchOD(p.oID,p.dID,w.anchor);
+    if(isToday){ if(!dmap) dmap=await getDelays(); } else dmap={};
 
-    const cutoff = queryTime!=null ? toMin(queryTime) : toMin(taipeiTime());
-    const up=list.filter(x=>toMin(x.dep)>=cutoff).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,10);
+    let rows=[];
+    od.list.forEach(x=>{const sm=winMin(x.dep); if(sm!=null&&sm>=w.cut) rows.push({...x,sm});});
+    rows.sort((a,b)=>a.sm-b.sm);
+    // not enough before service-day end → pull next day's early trains (≤01:00)
+    if(rows.length<10){
+      try{
+        const od2=await fetchOD(p.oID,p.dID,w.next);
+        od2.list.forEach(x=>{const m=toMin(x.dep); if(m>=0&&m<=60){const sm=m+1440; if(sm>=w.cut) rows.push({...x,sm});}});
+        const seen=new Set();
+        rows=rows.filter(r=>{const k=r.no+"@"+r.dep; if(seen.has(k))return false; seen.add(k); return true;});
+        rows.sort((a,b)=>a.sm-b.sm);
+      }catch(e){/* tail optional */}
+    }
+    const up=rows.slice(0,10);
 
     if(!up.length){
-      if(list.length) renderMsg(body, queryTime!=null ? (queryTime+" 之後已無班次") : "今日已無後續班次");
+      if(od.list.length) renderMsg(body, queryTime!=null||queryDate!=null ? "該時段已無班次" : "今日已無後續班次");
       else if(od.raw>0) renderMsg(body,`收到 ${od.raw} 筆資料但無法解析<br><span style='font-size:13px;color:#7e8ba0'>請把這行字回報給我</span>`);
-      else renderMsg(body,`今日查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${date})試試對調起訖站</span>`);
+      else renderMsg(body,`查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${w.anchor})試試對調起訖站</span>`);
       return;
     }
     renderRows(body,up,dmap);
@@ -610,13 +645,14 @@ function boardShell(){
 function renderRows(board,rows,dmap){
   let html=topBar()+`<div class="board-scroll"><div class="tlist">`;
   rows.forEach(r=>{
+    const xm = r.sm>=1440 ? ' xmid' : '';
     html+=`<div class="trow">
       <div class="tleft">
         <div class="no">${r.no}</div>
         <div class="ty"><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></div>
       </div>
       <div class="tmid">
-        <span class="dep">${r.dep||"—"}</span><span class="arr">${r.arr||"—"}</span>
+        <span class="dep${xm}">${r.dep||"—"}</span><span class="arr${xm}">${r.arr||"—"}</span>
       </div>
       <div class="tright">
         <span class="dur">${fmtDur(r.dep,r.arr)}</span>
