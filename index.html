@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>台鐵時刻</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="台鐵時刻">
+<meta name="theme-color" content="#0d1626">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<style>
+  :root{
+    --bg1:#1b2a4a; --bg2:#0d1626; --ink:#f3f6fb; --muted:#9fb0c8;
+    --line:rgba(255,255,255,.10); --glass:rgba(255,255,255,.07);
+    --glass2:rgba(255,255,255,.045);
+    --amber:#f4b45a; --green:#56d39a; --red:#ff6b6b; --accent:#7fb2ff;
+    --safeTop:env(safe-area-inset-top); --safeBot:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink); overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+    background:
+      radial-gradient(120% 80% at 80% -10%, #2a3c63 0%, rgba(42,60,99,0) 55%),
+      radial-gradient(120% 90% at -10% 110%, #16314f 0%, rgba(22,49,79,0) 50%),
+      linear-gradient(168deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+  .screen{position:fixed;inset:0;display:none}
+  .screen.on{display:block}
+
+  /* ---------- main ---------- */
+  #panels{
+    height:100%; display:flex; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #panels::-webkit-scrollbar{display:none}
+  .card{
+    flex:0 0 100%; height:100%; scroll-snap-align:center;
+    display:flex; flex-direction:column;
+    padding:calc(var(--safeTop) + 18px) 20px calc(var(--safeBot) + 96px);
+  }
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:6px}
+  .route{line-height:1.05}
+  .route .pair{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .route .sta{font-size:34px;font-weight:700;letter-spacing:.5px}
+  .route .arrow{font-size:26px;color:var(--accent);font-weight:600;transform:translateY(-1px)}
+  .route .sub{margin-top:8px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:2px;text-transform:uppercase}
+  .card-menu{font-size:22px;color:var(--muted);width:40px;height:40px;border-radius:50%;flex:0 0 auto;margin:-4px -6px 0 0}
+  .card-menu:active{background:var(--glass)}
+
+  .board{
+    margin-top:22px; flex:1 1 auto; min-height:0;
+    background:var(--glass); border:1px solid var(--line); border-radius:22px;
+    backdrop-filter:blur(20px) saturate(140%); -webkit-backdrop-filter:blur(20px) saturate(140%);
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 20px 50px rgba(0,0,0,.28);
+  }
+  .board-top{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+  .board-top .ttl{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:1px}
+  .board-top .upd{font-size:12px;color:var(--muted)}
+  .tt{width:100%;border-collapse:collapse;table-layout:fixed}
+  .tt th{
+    font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    text-align:right;padding:12px 6px 8px;
+  }
+  .tt th:first-child,.tt td:first-child{text-align:left;padding-left:18px}
+  .tt th:last-child,.tt td:last-child{padding-right:18px}
+  .tt th.c2{text-align:left}
+  .tt td{
+    padding:14px 6px;font-variant-numeric:tabular-nums;font-size:17px;text-align:right;
+    border-top:1px solid rgba(255,255,255,.05);
+  }
+  .tt td.c2{text-align:left}
+  .tt tr:first-child td{border-top:0}
+  .no{font-weight:600}
+  .type{display:inline-block;font-size:13px;font-weight:600;color:var(--ink);
+    padding:3px 9px;border-radius:999px;background:rgba(127,178,255,.16);white-space:nowrap}
+  .type.tze{background:rgba(244,180,90,.18);color:#ffd9a0}      /* 自強類 */
+  .type.chu{background:rgba(86,211,154,.16);color:#a9f0cf}      /* 莒光 */
+  .type.local{background:rgba(127,178,255,.16);color:#cfe0ff}   /* 區間 */
+  .dep{font-weight:600;font-size:18px}
+  .arr{color:var(--muted)}
+  .delay .ok{color:var(--green);font-size:14px;font-weight:600}
+  .delay .late{color:var(--amber);font-size:15px;font-weight:700}
+  .delay .bad{color:var(--red);font-size:15px;font-weight:700}
+  .delay .na{color:var(--muted);font-size:15px}
+  .board-msg{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:var(--muted);font-size:15px;padding:30px;line-height:1.6}
+  .spin{display:inline-block;width:18px;height:18px;border:2px solid var(--line);
+    border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* ---------- dock ---------- */
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;
+    padding:10px 26px calc(var(--safeBot) + 14px);
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(to top,rgba(10,17,30,.85),rgba(10,17,30,0));
+  }
+  .dock .dbtn{
+    width:54px;height:54px;border-radius:50%;font-size:24px;
+    background:var(--glass);border:1px solid var(--line);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+  }
+  .dock .dbtn:active{transform:scale(.93)}
+  #dots{display:flex;gap:8px;align-items:center}
+  #dots .d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:.25s}
+  #dots .d.on{background:#fff;width:8px;height:8px}
+  #btnRefresh.busy{pointer-events:none}
+  #btnRefresh.busy span{display:inline-block;animation:sp .7s linear infinite}
+
+  /* ---------- empty ---------- */
+  #empty{display:none;height:100%;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:40px;gap:18px}
+  #empty.on{display:flex}
+  #empty h2{margin:0;font-size:23px;font-weight:700}
+  #empty p{margin:0;color:var(--muted);font-size:15px;line-height:1.6;max-width:300px}
+  .pill{padding:14px 24px;border-radius:16px;font-size:16px;font-weight:600;
+    background:var(--accent);color:#0d1626;border:0}
+  .pill:active{transform:scale(.97)}
+  .ghost{background:var(--glass);color:var(--ink);border:1px solid var(--line)}
+
+  /* ---------- sheets ---------- */
+  .sheet{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end}
+  .sheet.on{display:flex}
+  .sheet .mask{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+  .sheet .panel{
+    position:relative;width:100%;background:#141f33;border-top-left-radius:26px;border-top-right-radius:26px;
+    border-top:1px solid var(--line);padding:8px 20px calc(var(--safeBot) + 24px);
+    max-height:90vh;overflow:auto;animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .grip{width:38px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);margin:8px auto 14px}
+  .sheet h3{margin:4px 0 18px;font-size:20px;font-weight:700;text-align:center}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin:0 0 7px 4px;font-weight:600}
+  .field input{
+    width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;
+  }
+  .field input:focus{border-color:var(--accent)}
+  .odrow{display:flex;align-items:flex-end;gap:10px}
+  .odrow .field{flex:1;margin-bottom:0}
+  .swap{width:44px;height:50px;border-radius:14px;background:var(--glass);border:1px solid var(--line);
+    font-size:20px;flex:0 0 auto;margin-bottom:0}
+  .locbtn{margin:14px 0 4px;width:100%;padding:13px;border-radius:14px;background:var(--glass);
+    border:1px solid var(--line);font-size:15px;font-weight:600;color:var(--accent)}
+  .locbtn:active{background:rgba(127,178,255,.12)}
+  .acts{display:flex;gap:10px;margin-top:22px}
+  .acts button{flex:1;padding:15px;border-radius:14px;font-size:16px;font-weight:600}
+  .btn-primary{background:var(--accent);color:#0d1626}
+  .btn-secondary{background:var(--glass);border:1px solid var(--line)}
+  .btn-danger{background:rgba(255,107,107,.14);color:var(--red);border:1px solid rgba(255,107,107,.3)}
+  .hint{font-size:13px;color:var(--muted);line-height:1.6;margin:6px 4px 0}
+  .hint a{color:var(--accent)}
+  .err{color:var(--red);font-size:14px;margin:10px 4px 0;min-height:18px}
+  .menu-list button{display:block;width:100%;text-align:center;padding:16px;font-size:17px;
+    border-bottom:1px solid var(--line)}
+  .menu-list button:last-child{border-bottom:0}
+
+  /* ---------- setup ---------- */
+  #setup .wrap{height:100%;overflow:auto;padding:calc(var(--safeTop) + 50px) 26px calc(var(--safeBot) + 40px);
+    max-width:480px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;min-height:100%}
+  #setup .logo{font-size:34px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  #setup .tag{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:26px}
+  #setup .steps{font-size:14px;color:var(--muted);line-height:1.8;margin:20px 4px;
+    background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  #setup .steps b{color:var(--ink)}
+  #setup .steps a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP ============ -->
+<section id="setup" class="screen">
+  <div class="wrap">
+    <div class="logo">台鐵時刻</div>
+    <div class="tag">即時起訖站時刻表 · 加到主畫面就像原生 App</div>
+    <div class="field">
+      <label>TDX Client ID</label>
+      <input id="inId" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="貼上你的 Client ID">
+    </div>
+    <div class="field">
+      <label>TDX Client Secret</label>
+      <input id="inSecret" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="貼上你的 Client Secret">
+    </div>
+    <div class="err" id="setupErr"></div>
+    <button class="pill" id="btnSaveCreds" style="width:100%;margin-top:6px">測試並開始使用</button>
+    <div class="steps">
+      <b>怎麼拿金鑰?</b>（免費，約幾分鐘）<br>
+      1. 到 <a href="https://tdx.transportdata.tw/register" target="_blank">tdx.transportdata.tw</a> 註冊會員並驗證 Email<br>
+      2. 登入後進「會員中心 → 資料服務 → API 金鑰」<br>
+      3. 點開預設金鑰，複製 <b>Client Id</b> 與 <b>Client Secret</b> 貼上面<br>
+      <span style="color:#7e8ba0">金鑰只存在你手機本機，不會上傳任何伺服器。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAIN ============ -->
+<section id="main" class="screen">
+  <div id="panels"></div>
+  <div id="empty">
+    <h2>還沒有任何路線</h2>
+    <p>新增一組 A 站 → B 站，就能像天氣 App 一樣左右滑動查看即時時刻。</p>
+    <button class="pill" id="emptyAdd">＋ 新增第一組路線</button>
+    <button class="pill ghost" id="emptyLoc">📍 用目前位置建立</button>
+  </div>
+  <div class="dock">
+    <button class="dbtn" id="btnRefresh" title="更新"><span>↻</span></button>
+    <div id="dots"></div>
+    <button class="dbtn" id="btnAdd" title="新增">＋</button>
+  </div>
+</section>
+
+<!-- ============ ADD / EDIT SHEET ============ -->
+<div class="sheet" id="addSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3 id="addTitle">新增路線</h3>
+    <div class="odrow">
+      <div class="field">
+        <label>起站 A</label>
+        <input id="inO" list="staList" autocapitalize="off" placeholder="例如 板橋">
+      </div>
+      <button class="swap" id="btnSwap" title="對調">⇅</button>
+      <div class="field">
+        <label>到站 B</label>
+        <input id="inD" list="staList" autocapitalize="off" placeholder="例如 臺北">
+      </div>
+    </div>
+    <datalist id="staList"></datalist>
+    <button class="locbtn" id="btnLoc">📍 用目前位置設定起站</button>
+    <div class="err" id="addErr"></div>
+    <div class="acts">
+      <button class="btn-secondary" data-close>取消</button>
+      <button class="btn-primary" id="btnSavePreset">儲存</button>
+    </div>
+    <div class="hint">最多可儲存 10 組路線。站名需與台鐵車站一致（可輸入後從建議清單點選）。</div>
+  </div>
+</div>
+
+<!-- ============ CARD MENU SHEET ============ -->
+<div class="sheet" id="menuSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <div class="menu-list">
+      <button id="mEdit">編輯路線</button>
+      <button id="mSwap">對調起訖站</button>
+      <button id="mDelete" style="color:var(--red)">刪除這組路線</button>
+      <button data-close style="color:var(--muted)">取消</button>
+    </div>
+    <div style="text-align:center;margin-top:14px">
+      <button id="mSettings" style="font-size:13px;color:var(--muted)">API 金鑰設定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const AUTH_URL="https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token";
+const API="https://tdx.transportdata.tw/api/basic";
+const LS={creds:"tra.creds",token:"tra.token",sta:"tra.stations",presets:"tra.presets"};
+const $=s=>document.querySelector(s);
+
+/* ---------- storage ---------- */
+const getJSON=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const setJSON=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const getCreds=()=>getJSON(LS.creds,null);
+let presets=getJSON(LS.presets,[]);
+let stations=getJSON(LS.sta,null); // {fetchedAt, list:[{id,name,lat,lon}]}
+
+/* ---------- time helpers (Asia/Taipei) ---------- */
+function taipeiDate(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}
+function taipeiTime(){return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Taipei",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());}
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||"");return m?(+m[1])*60+(+m[2]):-1;};
+const zh=v=>v==null?"":(typeof v==="string"?v:(v.Zh_tw||v.zh_tw||v.En||""));
+
+/* ---------- TDX auth + fetch ---------- */
+async function getToken(){
+  const t=getJSON(LS.token,null);
+  if(t&&t.exp>Date.now()+60000) return t.tok;
+  const c=getCreds(); if(!c) throw new Error("尚未設定金鑰");
+  const body=new URLSearchParams({grant_type:"client_credentials",client_id:c.clientId,client_secret:c.clientSecret});
+  const r=await fetch(AUTH_URL,{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body});
+  if(!r.ok) throw new Error("授權失敗 ("+r.status+")，請確認金鑰是否正確");
+  const j=await r.json();
+  setJSON(LS.token,{tok:j.access_token,exp:Date.now()+((j.expires_in||86400)-120)*1000});
+  return j.access_token;
+}
+async function api(path,retry=true){
+  const tok=await getToken();
+  const r=await fetch(API+path,{headers:{authorization:"Bearer "+tok}});
+  if(r.status===401&&retry){localStorage.removeItem(LS.token);return api(path,false);}
+  if(r.status===429) throw new Error("查詢太頻繁，請稍後再試");
+  if(!r.ok) throw new Error("資料讀取失敗 ("+r.status+")");
+  return r.json();
+}
+
+/* ---------- stations ---------- */
+async function ensureStations(){
+  if(stations&&stations.list&&stations.list.length&&(Date.now()-stations.fetchedAt<30*864e5)) return stations.list;
+  const data=await api("/v3/Rail/TRA/Station?$format=JSON");
+  const arr=(Array.isArray(data)?data:data.Stations||[]).map(s=>({
+    id:s.StationID, name:zh(s.StationName),
+    lat:s.StationPosition&&s.StationPosition.PositionLat, lon:s.StationPosition&&s.StationPosition.PositionLon
+  })).filter(s=>s.id&&s.name);
+  stations={fetchedAt:Date.now(),list:arr}; setJSON(LS.sta,stations);
+  return arr;
+}
+const staByName=n=>(stations?.list||[]).find(s=>s.name===n||s.name===n.replace("台","臺")||s.name===n.replace("臺","台"));
+const staById=id=>(stations?.list||[]).find(s=>s.id===id);
+
+function fillDatalist(list){
+  const dl=$("#staList"); dl.innerHTML="";
+  list.forEach(s=>{const o=document.createElement("option");o.value=s.name;dl.appendChild(o);});
+}
+
+/* ---------- nearest station via geolocation ---------- */
+function nearestStation(){
+  return new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej(new Error("此裝置不支援定位"));
+    navigator.geolocation.getCurrentPosition(p=>{
+      const{latitude:la,longitude:lo}=p.coords;
+      let best=null,bd=1e18;
+      (stations?.list||[]).forEach(s=>{
+        if(s.lat==null||s.lon==null)return;
+        const dx=(s.lat-la),dy=(s.lon-lo)*Math.cos(la*Math.PI/180);
+        const d=dx*dx+dy*dy; if(d<bd){bd=d;best=s;}
+      });
+      best?res(best):rej(new Error("找不到鄰近車站"));
+    },e=>rej(new Error(e.code===1?"定位被拒絕，請到設定開啟定位權限":"定位失敗")),
+    {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+  });
+}
+
+/* ---------- timetable rendering ---------- */
+function typeClass(t){
+  if(/普悠瑪|太魯閣|自強|騰雲/.test(t)) return "tze";
+  if(/莒光|復興/.test(t)) return "chu";
+  if(/區間|區間快/.test(t)) return "local";
+  return "";
+}
+function delayCell(d){
+  if(d==null) return '<span class="na">—</span>';
+  if(d<=0) return '<span class="ok">準點</span>';
+  if(d<=5) return '<span class="late">+'+d+'</span>';
+  return '<span class="bad">+'+d+'</span>';
+}
+
+async function loadBoard(card,p){
+  const body=card.querySelector(".board");
+  body.querySelector(".upd").innerHTML='<span class="spin"></span>';
+  const slot=body.querySelector(".tt tbody")||null;
+  const msg=body.querySelector(".board-msg");
+  try{
+    const date=taipeiDate();
+    const od=await api(`/v3/Rail/TRA/DailyTrainTimetable/OD/${p.oID}/to/${p.dID}/${date}?$format=JSON`);
+    let list=(od.TrainTimetables||od.TrainTimetable||[]).map(t=>{
+      const info=t.TrainInfo||t, o=t.OriginStopTime||{}, d=t.DestinationStopTime||{};
+      return{no:info.TrainNo,type:zh(info.TrainTypeName),dep:o.DepartureTime||o.ArrivalTime,arr:d.ArrivalTime||d.DepartureTime};
+    }).filter(x=>x.no&&x.dep);
+    // delays
+    let dmap={};
+    try{
+      const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=600&$format=JSON");
+      (Array.isArray(dl)?dl:dl.TrainLiveDelays||[]).forEach(x=>{dmap[x.TrainNo]=x.DelayTime;});
+    }catch(e){/* delays optional */}
+
+    const now=toMin(taipeiTime());
+    let up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,5);
+
+    body.querySelector(".upd").textContent="更新 "+taipeiTime();
+    if(!up.length){
+      renderMsg(body,list.length?"今日已無後續班次":"查無此區間班次，請確認起訖站方向");
+      return;
+    }
+    renderRows(body,up,dmap);
+  }catch(e){
+    body.querySelector(".upd").textContent="";
+    renderMsg(body,"⚠️ "+(e.message||"讀取失敗")+"<br><span style='font-size:13px;color:#7e8ba0'>點下方更新鈕重試</span>");
+  }
+}
+function boardShell(){
+  return `<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd"></span></div>
+  <table class="tt"><thead><tr>
+    <th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>延誤</th>
+  </tr></thead><tbody></tbody></table>`;
+}
+function renderRows(board,rows,dmap){
+  let html=`<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd">更新 ${taipeiTime()}</span></div>
+  <table class="tt"><thead><tr><th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>延誤</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    html+=`<tr>
+      <td class="no">${r.no}</td>
+      <td class="c2"><span class="type ${typeClass(r.type)}">${r.type||"—"}</span></td>
+      <td class="dep">${r.dep||"—"}</td>
+      <td class="arr">${r.arr||"—"}</td>
+      <td class="delay">${delayCell(dmap[r.no])}</td>
+    </tr>`;
+  });
+  html+="</tbody></table>";
+  board.innerHTML=html;
+}
+function renderMsg(board,m){
+  board.innerHTML=`<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd"></span></div>
+  <div class="board-msg">${m}</div>`;
+}
+
+/* ---------- build cards ---------- */
+function buildCards(){
+  const wrap=$("#panels"); wrap.innerHTML="";
+  presets.forEach((p,i)=>{
+    const c=document.createElement("section");
+    c.className="card"; c.dataset.i=i;
+    c.innerHTML=`<div class="card-head">
+        <div class="route">
+          <div class="pair"><span class="sta">${p.oName}</span><span class="arrow">›</span><span class="sta">${p.dName}</span></div>
+          <div class="sub">即時時刻 · 往 ${p.dName}</div>
+        </div>
+        <button class="card-menu" data-menu="${i}">⋯</button>
+      </div>
+      <div class="board">${boardShell()}</div>`;
+    wrap.appendChild(c);
+  });
+  buildDots();
+  refreshAll();
+  updateView();
+}
+function buildDots(){
+  const d=$("#dots"); d.innerHTML="";
+  presets.forEach((_,i)=>{const s=document.createElement("div");s.className="d"+(i===0?" on":"");d.appendChild(s);});
+}
+function updateView(){
+  const has=presets.length>0;
+  $("#empty").classList.toggle("on",!has);
+  $("#panels").style.display=has?"flex":"none";
+  $("#dots").style.visibility=has?"visible":"hidden";
+}
+function activeIndex(){
+  const w=$("#panels");return Math.round(w.scrollLeft/w.clientWidth);
+}
+$("#panels").addEventListener("scroll",()=>{
+  const i=activeIndex();
+  document.querySelectorAll("#dots .d").forEach((d,k)=>d.classList.toggle("on",k===i));
+},{passive:true});
+
+async function refreshAll(){
+  const cards=[...document.querySelectorAll(".card")];
+  for(let k=0;k<cards.length;k++){ await loadBoard(cards[k],presets[k]); }
+}
+
+/* ---------- refresh button ---------- */
+$("#btnRefresh").addEventListener("click",async()=>{
+  const b=$("#btnRefresh"); b.classList.add("busy");
+  try{ await refreshAll(); } finally{ b.classList.remove("busy"); }
+});
+
+/* ---------- add / edit sheet ---------- */
+let editIndex=null;
+function openSheet(id){$("#"+id).classList.add("on");}
+function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("on"));}
+document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",closeSheets));
+
+async function openAdd(edit=null){
+  $("#addErr").textContent="";
+  editIndex=edit;
+  $("#addTitle").textContent=edit!=null?"編輯路線":"新增路線";
+  $("#inO").value=edit!=null?presets[edit].oName:"";
+  $("#inD").value=edit!=null?presets[edit].dName:"";
+  openSheet("addSheet");
+  try{ const list=await ensureStations(); fillDatalist(list); }catch(e){ $("#addErr").textContent="車站清單載入失敗："+e.message; }
+}
+$("#btnAdd").addEventListener("click",()=>{
+  if(presets.length>=10){alert("最多只能儲存 10 組路線");return;}
+  openAdd();
+});
+$("#emptyAdd").addEventListener("click",()=>openAdd());
+$("#btnSwap").addEventListener("click",()=>{const a=$("#inO").value;$("#inO").value=$("#inD").value;$("#inD").value=a;});
+
+$("#btnLoc").addEventListener("click",async()=>{
+  $("#addErr").textContent="定位中…";
+  try{ await ensureStations(); const s=await nearestStation(); $("#inO").value=s.name; $("#addErr").textContent="已設定最近車站："+s.name; }
+  catch(e){ $("#addErr").textContent=e.message; }
+});
+
+$("#btnSavePreset").addEventListener("click",()=>{
+  const o=staByName($("#inO").value.trim()), d=staByName($("#inD").value.trim());
+  if(!o||!d){$("#addErr").textContent="請從建議清單選擇正確的台鐵車站名";return;}
+  if(o.id===d.id){$("#addErr").textContent="起站與到站不能相同";return;}
+  const item={oID:o.id,oName:o.name,dID:d.id,dName:d.name};
+  if(editIndex!=null) presets[editIndex]=item; else presets.push(item);
+  setJSON(LS.presets,presets); closeSheets(); buildCards();
+  // jump to the card
+  requestAnimationFrame(()=>{const idx=editIndex!=null?editIndex:presets.length-1;$("#panels").scrollTo({left:idx*$("#panels").clientWidth,behavior:"smooth"});});
+});
+
+/* empty-state locate-and-create */
+$("#emptyLoc").addEventListener("click",async()=>{
+  try{ await ensureStations(); const s=await nearestStation(); await openAdd(); $("#inO").value=s.name; $("#addErr").textContent="起站已設為 "+s.name+"，請選擇到站"; }
+  catch(e){ alert(e.message); }
+});
+
+/* ---------- card menu ---------- */
+let menuIndex=null;
+$("#panels").addEventListener("click",e=>{
+  const b=e.target.closest("[data-menu]"); if(!b)return;
+  menuIndex=+b.dataset.menu; openSheet("menuSheet");
+});
+$("#mEdit").addEventListener("click",()=>{closeSheets();openAdd(menuIndex);});
+$("#mSwap").addEventListener("click",()=>{
+  const p=presets[menuIndex];
+  presets[menuIndex]={oID:p.dID,oName:p.dName,dID:p.oID,dName:p.oName};
+  setJSON(LS.presets,presets);closeSheets();buildCards();
+});
+$("#mDelete").addEventListener("click",()=>{
+  if(!confirm("確定刪除「"+presets[menuIndex].oName+" › "+presets[menuIndex].dName+"」?"))return;
+  presets.splice(menuIndex,1);setJSON(LS.presets,presets);closeSheets();buildCards();
+});
+$("#mSettings").addEventListener("click",()=>{closeSheets();showSetup();});
+
+/* ---------- setup screen ---------- */
+function showSetup(){
+  const c=getCreds();
+  $("#inId").value=c?c.clientId:""; $("#inSecret").value=c?c.clientSecret:"";
+  $("#setupErr").textContent="";
+  $("#main").classList.remove("on"); $("#setup").classList.add("on");
+}
+function showMain(){ $("#setup").classList.remove("on"); $("#main").classList.add("on"); buildCards(); }
+$("#btnSaveCreds").addEventListener("click",async()=>{
+  const id=$("#inId").value.trim(), sec=$("#inSecret").value.trim();
+  if(!id||!sec){$("#setupErr").textContent="請填入 Client ID 與 Secret";return;}
+  $("#setupErr").innerHTML='<span class="spin"></span> 驗證中…';
+  setJSON(LS.creds,{clientId:id,clientSecret:sec}); localStorage.removeItem(LS.token);
+  try{ await getToken(); await ensureStations(); $("#setupErr").textContent=""; showMain(); }
+  catch(e){ $("#setupErr").textContent=e.message; }
+});
+
+/* ---------- boot ---------- */
+(function boot(){
+  if(getCreds()) showMain(); else showSetup();
+  // auto refresh when app comes back to foreground
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&$("#main").classList.contains("on")&&presets.length) refreshAll(); });
+})();
+
+/* ---------- PWA manifest (inline) ---------- */
+const manifest={name:"台鐵時刻",short_name:"台鐵時刻",display:"standalone",background_color:"#0d1626",
+  theme_color:"#0d1626",icons:[{src:document.querySelector('link[rel=apple-touch-icon]').href,sizes:"180x180",type:"image/png"}]};
+const ml=document.createElement("link"); ml.rel="manifest";
+ml.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/json"}));
+document.head.appendChild(ml);
+</script>
+</body>
+</html>
