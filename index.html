@@ -350,6 +350,7 @@ const staByName=n=>(stations?.list||[]).find(s=>s.name===n||s.name===n.replace("
 const staById=id=>(stations?.list||[]).find(s=>s.id===id);
 
 // custom station autocomplete: type a character -> dropdown of matching stations
+let acPickedAt=0; // timestamp of last dropdown selection, used to block click fall-through
 function attachAutocomplete(input){
   const field=input.closest(".field");
   field.style.position="relative";
@@ -373,8 +374,9 @@ function attachAutocomplete(input){
   // pointerdown fires before blur and lets us keep the value without losing focus race
   list.addEventListener("pointerdown",e=>{
     const it=e.target.closest(".ac-item"); if(!it)return;
-    e.preventDefault();
+    e.preventDefault(); e.stopPropagation();
     input.value=it.textContent;
+    acPickedAt=Date.now();           // mark selection to swallow the stray click below
     list.classList.remove("on"); list.innerHTML="";
   });
   input.addEventListener("blur",()=>setTimeout(()=>list.classList.remove("on"),180));
@@ -581,12 +583,14 @@ $("#emptyAdd").addEventListener("click",()=>openAdd());
 $("#btnSwap").addEventListener("click",()=>{const a=$("#inO").value;$("#inO").value=$("#inD").value;$("#inD").value=a;});
 
 $("#btnLoc").addEventListener("click",async()=>{
+  if(Date.now()-acPickedAt<600) return; // ignore click that fell through from the dropdown
   $("#addErr").textContent="定位中…";
   try{ await ensureStations(); const s=await nearestStation(); $("#inO").value=s.name; $("#addErr").textContent="已設定最近車站："+s.name; }
   catch(e){ $("#addErr").textContent=e.message; }
 });
 
 $("#btnSavePreset").addEventListener("click",()=>{
+  if(Date.now()-acPickedAt<600) return; // ignore stray click from dropdown selection
   const o=staByName($("#inO").value.trim()), d=staByName($("#inD").value.trim());
   if(!o||!d){$("#addErr").textContent="請從建議清單選擇正確的台鐵車站名";return;}
   if(o.id===d.id){$("#addErr").textContent="起站與到站不能相同";return;}
