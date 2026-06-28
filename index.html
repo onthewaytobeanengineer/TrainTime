@@ -356,31 +356,54 @@ function delayCell(d){
   return '<span class="bad">+'+d+'</span>';
 }
 
+// robust parser: handles v3 (TrainInfo + OriginStopTime/DestinationStopTime),
+// v2 (DailyTrainInfo), and any shape that nests stops in a StopTimes array.
+function parseOD(data){
+  const arr=data&&(data.TrainTimetables||data.TrainTimetable)||(Array.isArray(data)?data:[]);
+  const list=(arr||[]).map(t=>{
+    const info=t.TrainInfo||t.DailyTrainInfo||t;
+    let o=t.OriginStopTime,d=t.DestinationStopTime;
+    if((!o||!d)&&Array.isArray(t.StopTimes)&&t.StopTimes.length>=2){o=t.StopTimes[0];d=t.StopTimes[t.StopTimes.length-1];}
+    o=o||{};d=d||{};
+    return{no:info&&info.TrainNo,type:zh(info&&info.TrainTypeName),
+      dep:o.DepartureTime||o.ArrivalTime,arr:d.ArrivalTime||d.DepartureTime};
+  }).filter(x=>x.no&&x.dep);
+  return{list,raw:(arr||[]).length};
+}
+async function fetchOD(o,d,date){
+  let raw=0;
+  const r3=await api(`/v3/Rail/TRA/DailyTrainTimetable/OD/${o}/to/${d}/${date}?$format=JSON`);
+  let p=parseOD(r3); raw+=p.raw;
+  if(p.list.length) return{list:p.list,raw,ver:"v3"};
+  try{
+    const r2=await api(`/v2/Rail/TRA/DailyTimetable/OD/${o}/to/${d}/${date}?$format=JSON`);
+    let p2=parseOD(r2); raw+=p2.raw;
+    if(p2.list.length) return{list:p2.list,raw,ver:"v2"};
+  }catch(e){/* v2 fallback optional */}
+  return{list:[],raw,ver:"v3+v2"};
+}
 async function loadBoard(card,p){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
-  const slot=body.querySelector(".tt tbody")||null;
-  const msg=body.querySelector(".board-msg");
   try{
     const date=taipeiDate();
-    const od=await api(`/v3/Rail/TRA/DailyTrainTimetable/OD/${p.oID}/to/${p.dID}/${date}?$format=JSON`);
-    let list=(od.TrainTimetables||od.TrainTimetable||[]).map(t=>{
-      const info=t.TrainInfo||t, o=t.OriginStopTime||{}, d=t.DestinationStopTime||{};
-      return{no:info.TrainNo,type:zh(info.TrainTypeName),dep:o.DepartureTime||o.ArrivalTime,arr:d.ArrivalTime||d.DepartureTime};
-    }).filter(x=>x.no&&x.dep);
+    const od=await fetchOD(p.oID,p.dID,date);
+    const list=od.list;
     // delays
     let dmap={};
     try{
-      const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=600&$format=JSON");
-      (Array.isArray(dl)?dl:dl.TrainLiveDelays||[]).forEach(x=>{dmap[x.TrainNo]=x.DelayTime;});
+      const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=900&$format=JSON");
+      (Array.isArray(dl)?dl:dl.TrainLiveDelays||dl.LiveTrainDelays||[]).forEach(x=>{dmap[x.TrainNo]=x.DelayTime;});
     }catch(e){/* delays optional */}
 
     const now=toMin(taipeiTime());
-    let up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,5);
+    const up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,5);
 
     body.querySelector(".upd").textContent="更新 "+taipeiTime();
     if(!up.length){
-      renderMsg(body,list.length?"今日已無後續班次":"查無此區間班次，請確認起訖站方向");
+      if(list.length) renderMsg(body,"今日已無後續班次");
+      else if(od.raw>0) renderMsg(body,`收到 ${od.raw} 筆資料但無法解析<br><span style='font-size:13px;color:#7e8ba0'>請把這行字回報給我</span>`);
+      else renderMsg(body,`今日查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${date})試試對調起訖站</span>`);
       return;
     }
     renderRows(body,up,dmap);
