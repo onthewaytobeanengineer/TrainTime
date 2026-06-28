@@ -509,27 +509,31 @@ async function fetchOD(o,d,date){
 }
 
 /* ---------- fares (cached long-term per OD pair) ---------- */
-// Full-fare prices for one OD obey 自強 > 莒光 > 區間, so rank distinct full fares to tiers.
+// Adult (FareClass=1), single (TicketType=1), standard cabin (CabinClass=1) full fares
+// obey 自強 > 莒光 > 區間, so rank distinct adult fares to tiers.
 function fareTiers(json){
   const recs=Array.isArray(json)?json:(json&&(json.ODFares||json.Fares))||[];
-  const prices=[];
+  const all=[]; // {price, fc, tt, cc}
+  const push=(o)=>{const p=Number(o&&o.Price); if(Number.isFinite(p)) all.push({price:p,fc:o.FareClass,tt:o.TicketType,cc:o.CabinClass});};
   recs.forEach(r=>{
-    const fares=r.Fares||r.Fare||(Array.isArray(r)?r:[]);
-    (Array.isArray(fares)?fares:[]).forEach(f=>{
-      const tt=f.TicketType, p=Number(f.Price);
-      const full=(tt==null)||tt===1||tt==="1"||/全票|成人|Adult/i.test(zh(f.TicketTypeName)||String(tt));
-      if(full&&Number.isFinite(p)) prices.push(p);
-    });
-    if(Number.isFinite(Number(r.Price))) prices.push(Number(r.Price));
+    const fares=r.Fares||r.Fare;
+    if(Array.isArray(fares)) fares.forEach(push); else push(r);
   });
-  const d=[...new Set(prices)].sort((a,b)=>b-a);
+  // FareClass 1=成人, TicketType 1=單程, CabinClass 1=標準座; relax progressively if fields absent
+  const pick=pred=>[...new Set(all.filter(pred).map(x=>x.price))];
+  let d = pick(x=>x.fc==1 && (x.tt==null||x.tt==1) && (x.cc==null||x.cc==1));
+  if(!d.length) d = pick(x=>x.fc==1 && (x.tt==null||x.tt==1));
+  if(!d.length) d = pick(x=>x.fc==1);
+  if(!d.length) d = pick(x=>(x.tt==null||x.tt==1) && (x.cc==null||x.cc==1));
+  if(!d.length) d = pick(()=>true);
+  d.sort((a,b)=>b-a);
   const t={limited:null,express:null,local:null};
   if(d.length>=3){t.limited=d[0];t.express=d[1];t.local=d[d.length-1];}
   else if(d.length===2){t.limited=d[0];t.local=d[1];t.express=null;}
   else if(d.length===1){t.limited=t.express=t.local=d[0];}
   return t;
 }
-let fareCache=getJSON("tra.fares",{}); // {"oID-dID":{tiers,t}}
+let fareCache=getJSON("tra.faresV2",{}); // bumped key to discard old (wrong) cached fares
 async function getFare(o,d){
   const key=o+"-"+d, c=fareCache[key];
   if(c&&Date.now()-c.t<30*864e5) return c.tiers;
@@ -538,7 +542,7 @@ async function getFare(o,d){
     try{ json=await api(`/v3/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
     catch(e){ json=await api(`/v2/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
     const tiers=fareTiers(json);
-    fareCache[key]={tiers,t:Date.now()}; setJSON("tra.fares",fareCache);
+    fareCache[key]={tiers,t:Date.now()}; setJSON("tra.faresV2",fareCache);
     return tiers;
   }catch(e){ return (c&&c.tiers)||{limited:null,express:null,local:null}; }
 }
