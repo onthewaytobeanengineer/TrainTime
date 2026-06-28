@@ -46,14 +46,14 @@
     display:flex; flex-direction:column;
     padding:calc(var(--safeTop) + 18px) 20px calc(var(--safeBot) + 96px);
   }
-  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:6px}
-  .route{line-height:1.05}
-  .route .pair{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .route .sta{font-size:34px;font-weight:700;letter-spacing:.5px}
-  .route .arrow{font-size:26px;color:var(--accent);font-weight:600;transform:translateY(-1px)}
-  .route .sub{margin-top:8px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:2px;text-transform:uppercase}
-  .card-menu{font-size:22px;color:var(--muted);width:40px;height:40px;border-radius:50%;flex:0 0 auto;margin:-4px -6px 0 0}
-  .card-menu:active{background:var(--glass)}
+  .card-head{position:relative;display:flex;align-items:center;justify-content:center;min-height:46px;margin-top:8px}
+  .route{display:flex;align-items:center;gap:12px}
+  .route .sta{font-size:32px;font-weight:700;letter-spacing:.5px}
+  .route .chev{display:flex;align-items:center;color:var(--accent)}
+  .card-menu{position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--ink);background:var(--glass);border:1px solid var(--line)}
+  .card-menu:active{transform:translateY(-50%) scale(.92);background:rgba(255,255,255,.12)}
 
   .board{
     margin-top:22px; flex:1 1 auto; min-height:0;
@@ -104,19 +104,22 @@
   .clockbtn.on{color:#0d1626;background:var(--amber);border-color:var(--amber)}
   /* two-column train rows */
   .tlist{display:flex;flex-direction:column}
-  .trow{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06)}
+  .trow{display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
   .trow:first-child{border-top:0}
-  .tleft{flex:1 1 auto;min-width:0}
-  .tleft .l1{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-  .tleft .l1 .no{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
-  .tleft .l2{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
-  .tleft .l2 .dep{font-size:17px}
-  .tleft .l2 .arr{font-size:17px}
-  .tleft .l2 .ar{color:var(--accent);font-weight:700}
-  .tright{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;text-align:right;min-width:104px}
-  .tright .ri{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-variant-numeric:tabular-nums}
-  .tright .rl{font-size:11px;color:var(--muted);font-weight:600}
-  .tright .fare{font-size:14px;font-weight:600;color:#cfe0ff}
+  .tleft{flex:0 0 auto;min-width:54px}
+  .tleft .no{font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;line-height:1.15}
+  .tleft .ty{margin-top:2px}
+  .tmid{flex:1 1 auto;display:flex;align-items:baseline;justify-content:center;gap:14px;font-variant-numeric:tabular-nums}
+  .tmid .dep{font-size:27px;font-weight:700;letter-spacing:.5px}
+  .tmid .arr{font-size:27px;font-weight:600;color:var(--muted);letter-spacing:.5px}
+  .tright{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:52px;text-align:right}
+  .tright .dur{font-size:16px;font-weight:600;color:#e6edf7;white-space:nowrap}
+  .tright .dly{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .dly.g{color:#0AFF0A}
+  .dly.y{color:#FFDC00}
+  .dly.o{color:#FF5F00}
+  .dly.na{color:var(--muted);font-weight:600}
+  .tleft .type{background:none;padding:0;font-size:15px;font-weight:600}
   /* custom station autocomplete */
   .ac-list{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:70;
     background:#1c2942;border:1px solid var(--line);border-radius:12px;
@@ -150,7 +153,7 @@
     display:flex;align-items:center;justify-content:center;color:var(--ink);
   }
   .dock .dbtn:active{transform:scale(.93)}
-  #dots{display:flex;gap:8px;align-items:center}
+  #dots{display:flex;gap:8px;align-items:center;padding:9px 16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;min-height:30px}
   #dots .d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:.25s}
   #dots .d.on{background:#fff;width:8px;height:8px}
   #btnRefresh.busy{pointer-events:none}
@@ -464,21 +467,23 @@ function tierOf(t){
   if(/莒光/.test(t)) return "express";
   return "local"; // 復興/區間/區間快/普快/普通 皆按區間車票價
 }
-// duration between two HH:mm times, e.g. 30分鐘 / 1小時15分鐘
+// duration between two HH:mm times, e.g. 20分 / 1時15分
 function fmtDur(dep,arr){
   const d=toMin(dep),a=toMin(arr);
   if(d<0||a<0) return "—";
   let m=a-d; if(m<0) m+=1440;
   const h=Math.floor(m/60), mm=m%60;
-  if(h&&mm) return h+"小時"+mm+"分鐘";
-  if(h) return h+"小時";
-  return mm+"分鐘";
+  if(h&&mm) return h+"時"+mm+"分";
+  if(h) return h+"時";
+  return mm+"分";
 }
+// delay: 準點(0AFF0A) / 02分(<=29 FFDC00) / 30分(>=30 FF5F00); no live data -> —
 function delayCell(d){
-  if(d==null) return '<span class="na">—</span>';
-  if(d<=0) return '<span class="ok">準點</span>';
-  if(d<=5) return '<span class="late">+'+d+'</span>';
-  return '<span class="bad">+'+d+'</span>';
+  if(d==null) return '<span class="dly na">—</span>';
+  if(d<=0) return '<span class="dly g">準點</span>';
+  const txt=String(d).padStart(2,"0")+"分";
+  if(d<=29) return '<span class="dly y">'+txt+'</span>';
+  return '<span class="dly o">'+txt+'</span>';
 }
 
 // robust parser: handles v3 (TrainInfo + OriginStopTime/DestinationStopTime),
@@ -508,48 +513,6 @@ async function fetchOD(o,d,date){
   return{list:[],raw,ver:"v3+v2"};
 }
 
-/* ---------- fares (cached long-term per OD pair) ---------- */
-// Adult (FareClass=1), single (TicketType=1), standard cabin (CabinClass=1) full fares
-// obey 自強 > 莒光 > 區間, so rank distinct adult fares to tiers.
-function fareTiers(json){
-  const recs=Array.isArray(json)?json:(json&&(json.ODFares||json.Fares))||[];
-  const all=[]; // {price, fc, tt, cc}
-  const push=(o)=>{const p=Number(o&&o.Price); if(Number.isFinite(p)) all.push({price:p,fc:o.FareClass,tt:o.TicketType,cc:o.CabinClass});};
-  recs.forEach(r=>{
-    const fares=r.Fares||r.Fare;
-    if(Array.isArray(fares)) fares.forEach(push); else push(r);
-  });
-  // FareClass 1=成人, TicketType 1=單程, CabinClass 1=標準座; relax progressively if fields absent
-  const pick=pred=>[...new Set(all.filter(pred).map(x=>x.price))];
-  let d = pick(x=>x.fc==1 && (x.tt==null||x.tt==1) && (x.cc==null||x.cc==1));
-  if(!d.length) d = pick(x=>x.fc==1 && (x.tt==null||x.tt==1));
-  if(!d.length) d = pick(x=>x.fc==1);
-  if(!d.length) d = pick(x=>(x.tt==null||x.tt==1) && (x.cc==null||x.cc==1));
-  if(!d.length) d = pick(()=>true);
-  d.sort((a,b)=>b-a);
-  const t={limited:null,express:null,local:null};
-  if(d.length>=3){t.limited=d[0];t.express=d[1];t.local=d[d.length-1];}
-  else if(d.length===2){t.limited=d[0];t.local=d[1];t.express=null;}
-  else if(d.length===1){t.limited=t.express=t.local=d[0];}
-  return t;
-}
-let fareCache=getJSON("tra.faresV2",{}); // bumped key to discard old (wrong) cached fares
-async function getFare(o,d){
-  const key=o+"-"+d, c=fareCache[key];
-  if(c&&Date.now()-c.t<30*864e5) return c.tiers;
-  try{
-    let json;
-    try{ json=await api(`/v3/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
-    catch(e){ json=await api(`/v2/Rail/TRA/ODFare/${o}/to/${d}?$format=JSON`); }
-    const tiers=fareTiers(json);
-    fareCache[key]={tiers,t:Date.now()}; setJSON("tra.faresV2",fareCache);
-    return tiers;
-  }catch(e){ return (c&&c.tiers)||{limited:null,express:null,local:null}; }
-}
-function fareCell(tiers,type){
-  const p=tiers&&tiers[tierOf(type)];
-  return p?("$"+p):'<span style="color:var(--muted)">—</span>';
-}
 async function loadBoard(card,p,dmap){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
@@ -568,14 +531,15 @@ async function loadBoard(card,p,dmap){
       else renderMsg(body,`今日查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${date})試試對調起訖站</span>`);
       return;
     }
-    const tiers=await getFare(p.oID,p.dID).catch(()=>null);
-    renderRows(body,up,dmap,tiers);
+    renderRows(body,up,dmap);
   }catch(e){
     body.querySelector(".upd").textContent="";
     renderMsg(body,"⚠️ "+(e.message||"讀取失敗")+"<br><span style='font-size:13px;color:#7e8ba0'>點下方更新鈕重試</span>");
   }
 }
 const CLOCK_SVG='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+const MENU_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
+const CHEV_SVG='<svg viewBox="0 0 34 24" width="32" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l6 6-6 6"></path><path d="M13 6l6 6-6 6"></path><path d="M22 6l6 6-6 6"></path></svg>';
 function topBar(){
   const custom=queryTime!=null;
   const txt=custom ? (queryTime+" 起") : ("更新 "+taipeiTime());
@@ -586,18 +550,20 @@ function topBar(){
 function boardShell(){
   return topBar()+`<div class="board-scroll"><div class="tlist"></div></div>`;
 }
-function renderRows(board,rows,dmap,tiers){
+function renderRows(board,rows,dmap){
   let html=topBar()+`<div class="board-scroll"><div class="tlist">`;
   rows.forEach(r=>{
     html+=`<div class="trow">
       <div class="tleft">
-        <div class="l1"><span class="no">${r.no}</span><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></div>
-        <div class="l2"><span class="dep">${r.dep||"—"}</span><span class="ar">→</span><span class="arr">${r.arr||"—"}</span></div>
+        <div class="no">${r.no}</div>
+        <div class="ty"><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></div>
+      </div>
+      <div class="tmid">
+        <span class="dep">${r.dep||"—"}</span><span class="arr">${r.arr||"—"}</span>
       </div>
       <div class="tright">
-        <div class="ri"><span class="rl">時長</span><span class="dur">${fmtDur(r.dep,r.arr)}</span></div>
-        <div class="ri"><span class="rl">延誤</span><span class="delay">${delayCell(dmap[r.no])}</span></div>
-        <div class="ri"><span class="rl">票價</span><span class="fare">${fareCell(tiers,r.type)}</span></div>
+        <span class="dur">${fmtDur(r.dep,r.arr)}</span>
+        <span>${delayCell(dmap[r.no])}</span>
       </div>
     </div>`;
   });
@@ -615,11 +581,8 @@ function buildCards(){
     const c=document.createElement("section");
     c.className="card"; c.dataset.i=i;
     c.innerHTML=`<div class="card-head">
-        <div class="route">
-          <div class="pair"><span class="sta">${p.oName}</span><span class="arrow">›</span><span class="sta">${p.dName}</span></div>
-          <div class="sub">即時時刻 · 往 ${p.dName}</div>
-        </div>
-        <button class="card-menu" data-menu="${i}">⋯</button>
+        <button class="card-menu" data-menu="${i}" aria-label="選單">${MENU_SVG}</button>
+        <div class="route"><span class="sta">${p.oName}</span><span class="chev">${CHEV_SVG}</span><span class="sta">${p.dName}</span></div>
       </div>
       <div class="board">${boardShell()}</div>`;
     wrap.appendChild(c);
