@@ -296,13 +296,27 @@ async function getToken(){
   setJSON(LS.token,{tok:j.access_token,exp:Date.now()+((j.expires_in||86400)-120)*1000});
   return j.access_token;
 }
-async function api(path,retry=true){
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function api(path,tries=3){
   const tok=await getToken();
   const r=await fetch(API+path,{headers:{authorization:"Bearer "+tok}});
-  if(r.status===401&&retry){localStorage.removeItem(LS.token);return api(path,false);}
+  if(r.status===401&&tries>0){localStorage.removeItem(LS.token);await sleep(200);return api(path,tries-1);}
+  if(r.status===429&&tries>0){await sleep(1600);return api(path,tries-1);} // 被限流，稍等再試
   if(r.status===429) throw new Error("查詢太頻繁，請稍後再試");
   if(!r.ok) throw new Error("資料讀取失敗 ("+r.status+")");
   return r.json();
+}
+// 全 App 共用一份即時誤點資料，45 秒內不重抓，避免重複請求
+let delayCache={t:0,map:{}};
+async function getDelays(){
+  if(Date.now()-delayCache.t<45000) return delayCache.map;
+  try{
+    const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=900&$format=JSON");
+    const map={};
+    (Array.isArray(dl)?dl:dl.TrainLiveDelays||dl.LiveTrainDelays||[]).forEach(x=>{map[x.TrainNo]=x.DelayTime;});
+    delayCache={t:Date.now(),map};
+  }catch(e){/* 沿用舊的誤點資料 */}
+  return delayCache.map;
 }
 
 /* ---------- stations ---------- */
@@ -382,19 +396,14 @@ async function fetchOD(o,d,date){
   }catch(e){/* v2 fallback optional */}
   return{list:[],raw,ver:"v3+v2"};
 }
-async function loadBoard(card,p){
+async function loadBoard(card,p,dmap){
   const body=card.querySelector(".board");
   body.querySelector(".upd").innerHTML='<span class="spin"></span>';
   try{
     const date=taipeiDate();
     const od=await fetchOD(p.oID,p.dID,date);
     const list=od.list;
-    // delays
-    let dmap={};
-    try{
-      const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=900&$format=JSON");
-      (Array.isArray(dl)?dl:dl.TrainLiveDelays||dl.LiveTrainDelays||[]).forEach(x=>{dmap[x.TrainNo]=x.DelayTime;});
-    }catch(e){/* delays optional */}
+    if(!dmap) dmap=await getDelays(); // 單張卡片更新時才自行取用（已快取）
 
     const now=toMin(taipeiTime());
     const up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,5);
@@ -478,7 +487,11 @@ $("#panels").addEventListener("scroll",()=>{
 
 async function refreshAll(){
   const cards=[...document.querySelectorAll(".card")];
-  for(let k=0;k<cards.length;k++){ await loadBoard(cards[k],presets[k]); }
+  const dmap=await getDelays();           // 只抓一次即時誤點，全部共用
+  for(let k=0;k<cards.length;k++){
+    await loadBoard(cards[k],presets[k],dmap);
+    if(k<cards.length-1) await sleep(350); // 各組之間留間隔，避免被限流
+  }
 }
 
 /* ---------- refresh button ---------- */
