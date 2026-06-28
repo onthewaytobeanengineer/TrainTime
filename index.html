@@ -65,28 +65,45 @@
   .board-top{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
   .board-top .ttl{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:1px}
   .board-top .upd{font-size:12px;color:var(--muted)}
+  .board-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .tt{width:100%;border-collapse:collapse;table-layout:fixed}
   .tt th{
-    font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;
-    text-align:right;padding:12px 6px 8px;
+    font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px;
+    text-align:right;padding:11px 3px 8px;
   }
-  .tt th:first-child,.tt td:first-child{text-align:left;padding-left:18px}
-  .tt th:last-child,.tt td:last-child{padding-right:18px}
+  .tt th:nth-child(1),.tt td:nth-child(1){width:14%}
+  .tt th:nth-child(2),.tt td:nth-child(2){width:16%}
+  .tt th:nth-child(3),.tt td:nth-child(3){width:16%}
+  .tt th:nth-child(4),.tt td:nth-child(4){width:16%}
+  .tt th:nth-child(5),.tt td:nth-child(5){width:23%}
+  .tt th:nth-child(6),.tt td:nth-child(6){width:15%}
+  .tt th:first-child,.tt td:first-child{text-align:left;padding-left:16px}
+  .tt th:last-child,.tt td:last-child{padding-right:16px}
   .tt th.c2{text-align:left}
   .tt td{
-    padding:14px 6px;font-variant-numeric:tabular-nums;font-size:17px;text-align:right;
+    padding:10px 3px;font-variant-numeric:tabular-nums;font-size:15px;text-align:right;
     border-top:1px solid rgba(255,255,255,.05);
   }
   .tt td.c2{text-align:left}
   .tt tr:first-child td{border-top:0}
-  .no{font-weight:600}
-  .type{display:inline-block;font-size:13px;font-weight:600;color:var(--ink);
-    padding:3px 9px;border-radius:999px;background:rgba(127,178,255,.16);white-space:nowrap}
+  .no{font-weight:600;font-size:14px}
+  .type{display:inline-block;font-size:12px;font-weight:600;color:var(--ink);
+    padding:2px 8px;border-radius:999px;background:rgba(127,178,255,.16);white-space:nowrap}
   .type.tze{background:rgba(244,180,90,.18);color:#ffd9a0}      /* 自強類 */
   .type.chu{background:rgba(86,211,154,.16);color:#a9f0cf}      /* 莒光 */
   .type.local{background:rgba(127,178,255,.16);color:#cfe0ff}   /* 區間 */
-  .dep{font-weight:600;font-size:18px}
+  .dep{font-weight:600;font-size:15px}
   .arr{color:var(--muted)}
+  .dur{font-size:12px;color:#cdd8ea;white-space:nowrap}
+  /* custom station autocomplete */
+  .ac-list{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:70;
+    background:#1c2942;border:1px solid var(--line);border-radius:12px;
+    max-height:230px;overflow-y:auto;display:none;box-shadow:0 16px 36px rgba(0,0,0,.45);
+    -webkit-overflow-scrolling:touch}
+  .ac-list.on{display:block}
+  .ac-item{padding:13px 14px;font-size:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .ac-item:last-child{border-bottom:0}
+  .ac-item:active{background:rgba(127,178,255,.2)}
   .delay .ok{color:var(--green);font-size:14px;font-weight:600}
   .delay .late{color:var(--amber);font-size:15px;font-weight:700}
   .delay .bad{color:var(--red);font-size:15px;font-weight:700}
@@ -227,17 +244,16 @@
     <h3 id="addTitle">新增路線</h3>
     <div class="odrow">
       <div class="field">
-        <label>起站 A</label>
-        <input id="inO" list="staList" autocapitalize="off" placeholder="例如 板橋">
+        <label>起始站</label>
+        <input id="inO" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="例如 板橋">
       </div>
       <button class="swap" id="btnSwap" title="對調">⇅</button>
       <div class="field">
-        <label>到站 B</label>
-        <input id="inD" list="staList" autocapitalize="off" placeholder="例如 臺北">
+        <label>到達站</label>
+        <input id="inD" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="例如 臺北">
       </div>
     </div>
-    <datalist id="staList"></datalist>
-    <button class="locbtn" id="btnLoc">📍 用目前位置設定起站</button>
+    <button class="locbtn" id="btnLoc">使用目前位置</button>
     <div class="err" id="addErr"></div>
     <div class="acts">
       <button class="btn-secondary" data-close>取消</button>
@@ -333,9 +349,35 @@ async function ensureStations(){
 const staByName=n=>(stations?.list||[]).find(s=>s.name===n||s.name===n.replace("台","臺")||s.name===n.replace("臺","台"));
 const staById=id=>(stations?.list||[]).find(s=>s.id===id);
 
-function fillDatalist(list){
-  const dl=$("#staList"); dl.innerHTML="";
-  list.forEach(s=>{const o=document.createElement("option");o.value=s.name;dl.appendChild(o);});
+// custom station autocomplete: type a character -> dropdown of matching stations
+function attachAutocomplete(input){
+  const field=input.closest(".field");
+  field.style.position="relative";
+  const list=document.createElement("div");
+  list.className="ac-list";
+  field.appendChild(list);
+  const norm=s=>(s||"").replace(/台/g,"臺").trim();
+  function render(){
+    const v=norm(input.value);
+    const all=(stations&&stations.list)||[];
+    if(!v||!all.length){list.classList.remove("on");list.innerHTML="";return;}
+    let res=all.filter(s=>norm(s.name).startsWith(v));
+    if(!res.length) res=all.filter(s=>norm(s.name).includes(v));
+    res=res.slice(0,10);
+    if(!res.length){list.classList.remove("on");list.innerHTML="";return;}
+    list.innerHTML=res.map(s=>`<div class="ac-item">${s.name}</div>`).join("");
+    list.classList.add("on");
+  }
+  input.addEventListener("input",render);
+  input.addEventListener("focus",render);
+  // pointerdown fires before blur and lets us keep the value without losing focus race
+  list.addEventListener("pointerdown",e=>{
+    const it=e.target.closest(".ac-item"); if(!it)return;
+    e.preventDefault();
+    input.value=it.textContent;
+    list.classList.remove("on"); list.innerHTML="";
+  });
+  input.addEventListener("blur",()=>setTimeout(()=>list.classList.remove("on"),180));
 }
 
 /* ---------- nearest station via geolocation ---------- */
@@ -362,6 +404,18 @@ function typeClass(t){
   if(/莒光|復興/.test(t)) return "chu";
   if(/區間|區間快/.test(t)) return "local";
   return "";
+}
+// display name without the bracketed part: 自強(3000) -> 自強, 自強(普悠瑪) -> 自強
+function typeDisp(t){return (t||"").replace(/[（(][^）)]*[）)]/g,"").trim();}
+// duration between two HH:mm times, e.g. 30分鐘 / 1小時15分鐘
+function fmtDur(dep,arr){
+  const d=toMin(dep),a=toMin(arr);
+  if(d<0||a<0) return "—";
+  let m=a-d; if(m<0) m+=1440;
+  const h=Math.floor(m/60), mm=m%60;
+  if(h&&mm) return h+"小時"+mm+"分鐘";
+  if(h) return h+"小時";
+  return mm+"分鐘";
 }
 function delayCell(d){
   if(d==null) return '<span class="na">—</span>';
@@ -406,7 +460,7 @@ async function loadBoard(card,p,dmap){
     if(!dmap) dmap=await getDelays(); // 單張卡片更新時才自行取用（已快取）
 
     const now=toMin(taipeiTime());
-    const up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,5);
+    const up=list.filter(x=>toMin(x.dep)>=now).sort((a,b)=>toMin(a.dep)-toMin(b.dep)).slice(0,10);
 
     body.querySelector(".upd").textContent="更新 "+taipeiTime();
     if(!up.length){
@@ -422,28 +476,29 @@ async function loadBoard(card,p,dmap){
   }
 }
 function boardShell(){
-  return `<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd"></span></div>
-  <table class="tt"><thead><tr>
-    <th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>延誤</th>
-  </tr></thead><tbody></tbody></table>`;
+  return `<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd"></span></div>
+  <div class="board-scroll"><table class="tt"><thead><tr>
+    <th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>時長</th><th>延誤</th>
+  </tr></thead><tbody></tbody></table></div>`;
 }
 function renderRows(board,rows,dmap){
-  let html=`<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd">更新 ${taipeiTime()}</span></div>
-  <table class="tt"><thead><tr><th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>延誤</th></tr></thead><tbody>`;
+  let html=`<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd">更新 ${taipeiTime()}</span></div>
+  <div class="board-scroll"><table class="tt"><thead><tr><th>班次</th><th class="c2">車型</th><th>出發</th><th>到站</th><th>時長</th><th>延誤</th></tr></thead><tbody>`;
   rows.forEach(r=>{
     html+=`<tr>
       <td class="no">${r.no}</td>
-      <td class="c2"><span class="type ${typeClass(r.type)}">${r.type||"—"}</span></td>
+      <td class="c2"><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></td>
       <td class="dep">${r.dep||"—"}</td>
       <td class="arr">${r.arr||"—"}</td>
+      <td class="dur">${fmtDur(r.dep,r.arr)}</td>
       <td class="delay">${delayCell(dmap[r.no])}</td>
     </tr>`;
   });
-  html+="</tbody></table>";
+  html+="</tbody></table></div>";
   board.innerHTML=html;
 }
 function renderMsg(board,m){
-  board.innerHTML=`<div class="board-top"><span class="ttl">最近 5 班</span><span class="upd"></span></div>
+  board.innerHTML=`<div class="board-top"><span class="ttl">最近 10 班</span><span class="upd"></span></div>
   <div class="board-msg">${m}</div>`;
 }
 
@@ -513,8 +568,11 @@ async function openAdd(edit=null){
   $("#inO").value=edit!=null?presets[edit].oName:"";
   $("#inD").value=edit!=null?presets[edit].dName:"";
   openSheet("addSheet");
-  try{ const list=await ensureStations(); fillDatalist(list); }catch(e){ $("#addErr").textContent="車站清單載入失敗："+e.message; }
+  try{ await ensureStations(); }catch(e){ $("#addErr").textContent="車站清單載入失敗："+e.message; }
 }
+// enable custom station dropdowns
+attachAutocomplete($("#inO"));
+attachAutocomplete($("#inD"));
 $("#btnAdd").addEventListener("click",()=>{
   if(presets.length>=10){alert("最多只能儲存 10 組路線");return;}
   openAdd();
