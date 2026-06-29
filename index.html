@@ -20,6 +20,7 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
+  html{background:#0d1626}
   body{
     margin:0; color:var(--ink); overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",system-ui,sans-serif;
@@ -186,14 +187,16 @@
   .field{margin-bottom:16px}
   .field label{display:block;font-size:13px;color:var(--muted);margin:0 0 7px 4px;font-weight:600}
   .field input{
-    width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
-    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;
+    width:100%;box-sizing:border-box;min-width:0;max-width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;-webkit-appearance:none;appearance:none;
   }
   .field input:focus{border-color:var(--accent)}
   .field select{
-    width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    width:100%;box-sizing:border-box;min-width:0;max-width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
     background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;-webkit-appearance:none;appearance:none;
   }
+  /* time/date query fields centered */
+  #timeSheet .field input,#timeSheet .field select{text-align:center}
   .field select:focus{border-color:var(--accent)}
   /* route switcher list */
   .route-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
