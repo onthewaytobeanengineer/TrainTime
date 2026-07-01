@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>台鐵時刻</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="台鐵時刻">
+<meta name="theme-color" content="#0d1626">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<style>
+  :root{
+    --bg1:#1b2a4a; --bg2:#0d1626; --ink:#f3f6fb; --muted:#9fb0c8;
+    --line:rgba(255,255,255,.10); --glass:rgba(255,255,255,.07);
+    --glass2:rgba(255,255,255,.045);
+    --amber:#f4b45a; --green:#56d39a; --red:#ff6b6b; --accent:#7fb2ff;
+    --safeTop:env(safe-area-inset-top); --safeBot:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  html{background:#0d1626}
+  body{
+    margin:0; color:var(--ink); overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+    background:
+      radial-gradient(120% 80% at 80% -10%, #2a3c63 0%, rgba(42,60,99,0) 55%),
+      radial-gradient(120% 90% at -10% 110%, #16314f 0%, rgba(22,49,79,0) 50%),
+      linear-gradient(168deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+  .screen{position:fixed;inset:0;display:none}
+  .screen.on{display:block}
+
+  /* ---------- main ---------- */
+  #panels{
+    height:100%; display:flex; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #panels::-webkit-scrollbar{display:none}
+  .card{
+    flex:0 0 100%; height:100%; scroll-snap-align:center;
+    display:flex; flex-direction:column;
+    padding:calc(var(--safeTop) + 18px) 20px calc(var(--safeBot) + 96px);
+  }
+  .card-head{position:relative;display:flex;align-items:center;justify-content:center;min-height:46px;margin-top:8px}
+  .route{display:flex;align-items:center;gap:12px}
+  .route .sta{font-size:32px;font-weight:700;letter-spacing:.5px}
+  .route .chev{display:flex;align-items:center;color:var(--accent)}
+  .card-menu{position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--ink);background:var(--glass);border:1px solid var(--line)}
+  .card-menu:active{transform:translateY(-50%) scale(.92);background:rgba(255,255,255,.12)}
+
+  .board{
+    margin-top:22px; flex:1 1 auto; min-height:0;
+    background:var(--glass); border:1px solid var(--line); border-radius:22px;
+    backdrop-filter:blur(20px) saturate(140%); -webkit-backdrop-filter:blur(20px) saturate(140%);
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 20px 50px rgba(0,0,0,.28);
+  }
+  .board-top{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+  .board-top .ttl{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:1px}
+  .board-top .upd{font-size:12px;color:var(--muted)}
+  .board-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .tt{width:100%;border-collapse:collapse;table-layout:fixed}
+  .tt th{
+    font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px;
+    text-align:right;padding:11px 3px 8px;
+  }
+  .tt th:nth-child(1),.tt td:nth-child(1){width:14%}
+  .tt th:nth-child(2),.tt td:nth-child(2){width:16%}
+  .tt th:nth-child(3),.tt td:nth-child(3){width:16%}
+  .tt th:nth-child(4),.tt td:nth-child(4){width:16%}
+  .tt th:nth-child(5),.tt td:nth-child(5){width:23%}
+  .tt th:nth-child(6),.tt td:nth-child(6){width:15%}
+  .tt th:first-child,.tt td:first-child{text-align:left;padding-left:16px}
+  .tt th:last-child,.tt td:last-child{padding-right:16px}
+  .tt th.c2{text-align:left}
+  .tt td{
+    padding:10px 3px;font-variant-numeric:tabular-nums;font-size:15px;text-align:right;
+    border-top:1px solid rgba(255,255,255,.05);
+  }
+  .tt td.c2{text-align:left}
+  .tt tr:first-child td{border-top:0}
+  .no{font-weight:600;font-size:14px}
+  .type{display:inline-block;font-size:12px;font-weight:600;color:var(--ink);
+    padding:2px 8px;border-radius:999px;background:rgba(127,178,255,.16);white-space:nowrap}
+  .type.tze{background:rgba(244,180,90,.18);color:#ffd9a0}      /* 自強類 */
+  .type.chu{background:rgba(86,211,154,.16);color:#a9f0cf}      /* 莒光 */
+  .type.local{background:rgba(127,178,255,.16);color:#cfe0ff}   /* 區間 */
+  .dep{font-weight:600;font-size:15px}
+  .arr{color:var(--muted)}
+  .dur{font-size:13px;color:#cdd8ea;white-space:nowrap;font-weight:600}
+  /* board top: time + clock */
+  .board-top-r{display:flex;align-items:center;gap:8px}
+  .upd.custom{color:var(--amber);font-weight:600}
+  .clockbtn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line)}
+  .clockbtn:active{transform:scale(.92)}
+  .clockbtn.on{color:#0d1626;background:var(--amber);border-color:var(--amber)}
+  /* two-column train rows */
+  .tlist{display:flex;flex-direction:column}
+  .trow{display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
+  .trow:first-child{border-top:0}
+  .tleft{flex:0 0 auto;min-width:56px;text-align:center}
+  .tleft .no{font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;line-height:1.15}
+  .tleft .ty{margin-top:2px}
+  .tmid{flex:1 1 auto;display:flex;align-items:baseline;justify-content:center;gap:14px;font-variant-numeric:tabular-nums}
+  .tmid .dep{font-size:27px;font-weight:700;letter-spacing:.5px}
+  .tmid .arr{font-size:27px;font-weight:600;color:var(--muted);letter-spacing:.5px}
+  .tmid .dep.xmid{color:#FF8F3C}
+  .tmid .arr.xmid{color:#FFCB91}
+  .tright{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:52px;text-align:right}
+  .tright .dur{font-size:16px;font-weight:600;color:#e6edf7;white-space:nowrap}
+  .tright .dly{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .dly.g{color:#0AFF0A}
+  .dly.y{color:#FFDC00}
+  .dly.o{color:#FF5F00}
+  .dly.na{color:var(--muted);font-weight:600}
+  .tleft .type{display:inline-block;min-width:52px;text-align:center;padding:3px 8px;font-size:13px;font-weight:600;box-sizing:border-box}
+  /* custom station autocomplete */
+  .ac-list{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:70;
+    background:#1c2942;border:1px solid var(--line);border-radius:12px;
+    max-height:230px;overflow-y:auto;display:none;box-shadow:0 16px 36px rgba(0,0,0,.45);
+    -webkit-overflow-scrolling:touch}
+  .ac-list.on{display:block}
+  .ac-item{padding:13px 14px;font-size:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .ac-item:last-child{border-bottom:0}
+  .ac-item:active{background:rgba(127,178,255,.2)}
+  .delay .ok{color:var(--green);font-size:14px;font-weight:600}
+  .delay .late{color:var(--amber);font-size:15px;font-weight:700}
+  .delay .bad{color:var(--red);font-size:15px;font-weight:700}
+  .delay .na{color:var(--muted);font-size:15px}
+  .board-msg{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:var(--muted);font-size:15px;padding:30px;line-height:1.6}
+  .spin{display:inline-block;width:18px;height:18px;border:2px solid var(--line);
+    border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* ---------- dock ---------- */
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;
+    padding:10px 26px calc(var(--safeBot) + 14px);
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(to top,rgba(10,17,30,.85),rgba(10,17,30,0));
+  }
+  .dock .dbtn{
+    width:54px;height:54px;border-radius:50%;font-size:24px;
+    background:var(--glass);border:1px solid var(--line);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+  }
+  .dock .dbtn:active{transform:scale(.93)}
+  #dots{display:flex;gap:8px;align-items:center;padding:9px 16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;min-height:30px}
+  #dots .d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:.25s}
+  #dots .d.on{background:#fff;width:8px;height:8px}
+  #btnRefresh.busy{pointer-events:none}
+  #btnRefresh.busy span{display:inline-block;animation:sp .7s linear infinite}
+
+  /* ---------- empty ---------- */
+  #empty{display:none;height:100%;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:40px;gap:18px}
+  #empty.on{display:flex}
+  #empty h2{margin:0;font-size:23px;font-weight:700}
+  #empty p{margin:0;color:var(--muted);font-size:15px;line-height:1.6;max-width:300px}
+  .pill{padding:14px 24px;border-radius:16px;font-size:16px;font-weight:600;
+    background:var(--accent);color:#0d1626;border:0}
+  .pill:active{transform:scale(.97)}
+  .ghost{background:var(--glass);color:var(--ink);border:1px solid var(--line)}
+
+  /* ---------- sheets ---------- */
+  .sheet{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end}
+  .sheet.on{display:flex}
+  .sheet .mask{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+  .sheet .panel{
+    position:relative;width:100%;background:#141f33;border-top-left-radius:26px;border-top-right-radius:26px;
+    border-top:1px solid var(--line);padding:8px 20px calc(var(--safeBot) + 24px);
+    max-height:90vh;overflow:auto;animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .grip{width:38px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);margin:8px auto 14px}
+  .sheet h3{margin:4px 0 18px;font-size:20px;font-weight:700;text-align:center}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin:0 0 7px 4px;font-weight:600}
+  .field input{
+    width:100%;box-sizing:border-box;min-width:0;max-width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;-webkit-appearance:none;appearance:none;
+  }
+  .field input:focus{border-color:var(--accent)}
+  .field select{
+    width:100%;box-sizing:border-box;min-width:0;max-width:100%;padding:15px 16px;font-size:17px;border-radius:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border:1px solid var(--line);outline:none;-webkit-appearance:none;appearance:none;
+  }
+  /* time/date query fields centered */
+  #timeSheet .field input,#timeSheet .field select{text-align:center}
+  .field select:focus{border-color:var(--accent)}
+  /* route switcher list */
+  .route-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
+  .route-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);
+    touch-action:none;user-select:none;-webkit-user-select:none;transition:background .15s,border-color .15s}
+  .route-item .ri-grip{color:var(--muted);display:flex;flex:0 0 auto}
+  .route-item .ri-name{font-size:17px;font-weight:600}
+  .route-item .ri-arrow{color:var(--accent);margin:0 5px}
+  .route-item.current{border-color:var(--accent)}
+  .route-item.dragging{background:rgba(127,178,255,.18);border-color:var(--accent);
+    box-shadow:0 14px 30px rgba(0,0,0,.45);position:relative;z-index:5}
+  .odrow{display:flex;align-items:flex-end;gap:10px}
+  .odrow .field{flex:1;margin-bottom:0}
+  .swap{width:44px;height:50px;border-radius:14px;background:var(--glass);border:1px solid var(--line);
+    font-size:20px;flex:0 0 auto;margin-bottom:0}
+  .locbtn{margin:14px 0 4px;width:100%;padding:13px;border-radius:14px;background:var(--glass);
+    border:1px solid var(--line);font-size:15px;font-weight:600;color:var(--accent)}
+  .locbtn:active{background:rgba(127,178,255,.12)}
+  .acts{display:flex;gap:10px;margin-top:22px}
+  .acts button{flex:1;padding:15px;border-radius:14px;font-size:16px;font-weight:600}
+  .btn-primary{background:var(--accent);color:#0d1626}
+  .btn-secondary{background:var(--glass);border:1px solid var(--line)}
+  .btn-danger{background:rgba(255,107,107,.14);color:var(--red);border:1px solid rgba(255,107,107,.3)}
+  .hint{font-size:13px;color:var(--muted);line-height:1.6;margin:6px 4px 0}
+  .hint a{color:var(--accent)}
+  .err{color:var(--red);font-size:14px;margin:10px 4px 0;min-height:18px}
+  .menu-list button{display:block;width:100%;text-align:center;padding:16px;font-size:17px;
+    border-bottom:1px solid var(--line)}
+  .menu-list button:last-child{border-bottom:0}
+
+  /* ---------- setup ---------- */
+  #setup .wrap{height:100%;overflow:auto;padding:calc(var(--safeTop) + 50px) 26px calc(var(--safeBot) + 40px);
+    max-width:480px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;min-height:100%}
+  #setup .logo{font-size:34px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  #setup .tag{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:26px}
+  #setup .steps{font-size:14px;color:var(--muted);line-height:1.8;margin:20px 4px;
+    background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  #setup .steps b{color:var(--ink)}
+  #setup .steps a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP ============ -->
+<section id="setup" class="screen">
+  <div class="wrap">
+    <div class="logo">台鐵時刻</div>
+    <div class="tag">即時起訖站時刻表 · 加到主畫面就像原生 App</div>
+    <div class="field">
+      <label>TDX Client ID</label>
+      <input id="inId" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="貼上你的 Client ID">
+    </div>
+    <div class="field">
+      <label>TDX Client Secret</label>
+      <input id="inSecret" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="貼上你的 Client Secret">
+    </div>
+    <div class="err" id="setupErr"></div>
+    <button class="pill" id="btnSaveCreds" style="width:100%;margin-top:6px">測試並開始使用</button>
+    <div class="steps">
+      <b>怎麼拿金鑰?</b>（免費，約幾分鐘）<br>
+      1. 到 <a href="https://tdx.transportdata.tw/register" target="_blank">tdx.transportdata.tw</a> 註冊會員並驗證 Email<br>
+      2. 登入後進「會員中心 → 資料服務 → API 金鑰」<br>
+      3. 點開預設金鑰，複製 <b>Client Id</b> 與 <b>Client Secret</b> 貼上面<br>
+      <span style="color:#7e8ba0">金鑰只存在你手機本機，不會上傳任何伺服器。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAIN ============ -->
+<section id="main" class="screen">
+  <div id="panels"></div>
+  <div id="empty">
+    <h2>還沒有任何路線</h2>
+    <p>新增一組 A 站 → B 站，就能像天氣 App 一樣左右滑動查看即時時刻。</p>
+    <button class="pill" id="emptyAdd">＋ 新增第一組路線</button>
+    <button class="pill ghost" id="emptyLoc">📍 用目前位置建立</button>
+  </div>
+  <div class="dock">
+    <button class="dbtn" id="btnRefresh" title="更新"><span>↻</span></button>
+    <div id="dots"></div>
+    <button class="dbtn" id="btnAdd" title="新增">＋</button>
+  </div>
+</section>
+
+<!-- ============ ADD / EDIT SHEET ============ -->
+<div class="sheet" id="addSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3 id="addTitle">新增路線</h3>
+    <div class="odrow">
+      <div class="field">
+        <label>起始站</label>
+        <input id="inO" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="例如 板橋">
+      </div>
+      <button class="swap" id="btnSwap" title="對調">⇅</button>
+      <div class="field">
+        <label>到達站</label>
+        <input id="inD" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="例如 臺北">
+      </div>
+    </div>
+    <button class="locbtn" id="btnLoc">使用目前位置</button>
+    <div class="err" id="addErr"></div>
+    <div class="acts">
+      <button class="btn-secondary" data-close>取消</button>
+      <button class="btn-primary" id="btnSavePreset">儲存</button>
+    </div>
+    <div class="hint">最多可儲存 10 組路線。站名需與台鐵車站一致（可輸入後從建議清單點選）。</div>
+  </div>
+</div>
+
+<!-- ============ CARD MENU SHEET ============ -->
+<div class="sheet" id="menuSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <div class="menu-list">
+      <button id="mEdit">編輯路線</button>
+      <button id="mSwap">對調起訖站</button>
+      <button id="mDelete" style="color:var(--red)">刪除這組路線</button>
+      <button data-close style="color:var(--muted)">取消</button>
+    </div>
+    <div style="text-align:center;margin-top:14px">
+      <button id="mSettings" style="font-size:13px;color:var(--muted)">API 金鑰設定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TIME QUERY SHEET ============ -->
+<div class="sheet" id="timeSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3>查詢其他時間</h3>
+    <div class="field">
+      <label>查詢日期</label>
+      <select id="inDate"></select>
+    </div>
+    <div class="field">
+      <label>顯示此時間以後的班次</label>
+      <input type="time" id="inTime">
+    </div>
+    <div class="acts">
+      <button class="btn-primary" id="btnTimeApply" style="flex:1">確認</button>
+    </div>
+    <div class="hint">設定後所有路線都會顯示該時間之後的班次。</div>
+  </div>
+</div>
+
+<!-- ============ ROUTE SWITCHER SHEET ============ -->
+<div class="sheet" id="routeSheet">
+  <div class="mask" data-close></div>
+  <div class="panel">
+    <div class="grip"></div>
+    <h3>切換路線</h3>
+    <div id="routeList" class="route-list"></div>
+    <div class="hint">點一下卡片即可切換；長按卡片可上下拖曳調整順序。</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const AUTH_URL="https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token";
+const API="https://tdx.transportdata.tw/api/basic";
+const LS={creds:"tra.creds",token:"tra.token",sta:"tra.stations",presets:"tra.presets"};
+const $=s=>document.querySelector(s);
+
+/* ---------- storage ---------- */
+const getJSON=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const setJSON=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const getCreds=()=>getJSON(LS.creds,null);
+let presets=getJSON(LS.presets,[]);
+let stations=getJSON(LS.sta,null); // {fetchedAt, list:[{id,name,lat,lon}]}
+let queryTime=null; // null = real time; "HH:mm" = show trains after this time
+let queryDate=null; // null = today; "YYYY-MM-DD" = a chosen date within 28 days
+
+/* ---------- time helpers (Asia/Taipei) ---------- */
+function taipeiDate(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}
+function taipeiTime(){return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Taipei",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());}
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||"");return m?(+m[1])*60+(+m[2]):-1;};
+const zh=v=>v==null?"":(typeof v==="string"?v:(v.Zh_tw||v.zh_tw||v.En||""));
+
+/* ---------- TDX auth + fetch ---------- */
+async function getToken(){
+  const t=getJSON(LS.token,null);
+  if(t&&t.exp>Date.now()+60000) return t.tok;
+  const c=getCreds(); if(!c) throw new Error("尚未設定金鑰");
+  const body=new URLSearchParams({grant_type:"client_credentials",client_id:c.clientId,client_secret:c.clientSecret});
+  const r=await fetch(AUTH_URL,{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body});
+  if(!r.ok) throw new Error("授權失敗 ("+r.status+")，請確認金鑰是否正確");
+  const j=await r.json();
+  setJSON(LS.token,{tok:j.access_token,exp:Date.now()+((j.expires_in||86400)-120)*1000});
+  return j.access_token;
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// global pacing: every API call is serialized at least 320ms apart to respect TDX rate limits
+let apiChain=Promise.resolve();
+function apiGate(){const n=apiChain.then(()=>sleep(320));apiChain=n.catch(()=>{});return n;}
+async function api(path,tries=4){
+  await apiGate();
+  const tok=await getToken();
+  const r=await fetch(API+path,{headers:{authorization:"Bearer "+tok}});
+  if(r.status===401&&tries>0){localStorage.removeItem(LS.token);await sleep(300);return api(path,tries-1);}
+  if(r.status===429&&tries>0){await sleep(2000);return api(path,tries-1);} // 被限流，稍等再試
+  if(r.status===429) throw new Error("查詢太頻繁，請稍後再試");
+  if(!r.ok) throw new Error("資料讀取失敗 ("+r.status+")");
+  return r.json();
+}
+// 全 App 共用一份即時誤點資料，45 秒內不重抓，避免重複請求
+let delayCache={t:0,map:{}};
+async function getDelays(){
+  if(Date.now()-delayCache.t<45000) return delayCache.map;
+  try{
+    const dl=await api("/v2/Rail/TRA/LiveTrainDelay?$top=900&$format=JSON");
+    const map={};
+    (Array.isArray(dl)?dl:dl.TrainLiveDelays||dl.LiveTrainDelays||[]).forEach(x=>{map[x.TrainNo]=x.DelayTime;});
+    delayCache={t:Date.now(),map};
+  }catch(e){/* 沿用舊的誤點資料 */}
+  return delayCache.map;
+}
+
+/* ---------- stations ---------- */
+async function ensureStations(){
+  if(stations&&stations.list&&stations.list.length&&(Date.now()-stations.fetchedAt<30*864e5)) return stations.list;
+  const data=await api("/v3/Rail/TRA/Station?$format=JSON");
+  const arr=(Array.isArray(data)?data:data.Stations||[]).map(s=>({
+    id:s.StationID, name:zh(s.StationName),
+    lat:s.StationPosition&&s.StationPosition.PositionLat, lon:s.StationPosition&&s.StationPosition.PositionLon
+  })).filter(s=>s.id&&s.name);
+  stations={fetchedAt:Date.now(),list:arr}; setJSON(LS.sta,stations);
+  return arr;
+}
+const staByName=n=>(stations?.list||[]).find(s=>s.name===n||s.name===n.replace("台","臺")||s.name===n.replace("臺","台"));
+const staById=id=>(stations?.list||[]).find(s=>s.id===id);
+
+// custom station autocomplete: type a character -> dropdown of matching stations
+let acPickedAt=0; // timestamp of last dropdown selection, used to block click fall-through
+function attachAutocomplete(input){
+  const field=input.closest(".field");
+  field.style.position="relative";
+  const list=document.createElement("div");
+  list.className="ac-list";
+  field.appendChild(list);
+  const norm=s=>(s||"").replace(/台/g,"臺").trim();
+  function render(){
+    const v=norm(input.value);
+    const all=(stations&&stations.list)||[];
+    if(!v||!all.length){list.classList.remove("on");list.innerHTML="";return;}
+    let res=all.filter(s=>norm(s.name).startsWith(v));
+    if(!res.length) res=all.filter(s=>norm(s.name).includes(v));
+    res=res.slice(0,10);
+    if(!res.length){list.classList.remove("on");list.innerHTML="";return;}
+    list.innerHTML=res.map(s=>`<div class="ac-item">${s.name}</div>`).join("");
+    list.classList.add("on");
+  }
+  input.addEventListener("input",render);
+  input.addEventListener("focus",render);
+  // pointerdown fires before blur and lets us keep the value without losing focus race
+  list.addEventListener("pointerdown",e=>{
+    const it=e.target.closest(".ac-item"); if(!it)return;
+    e.preventDefault(); e.stopPropagation();
+    input.value=it.textContent;
+    acPickedAt=Date.now();           // mark selection to swallow the stray click below
+    list.classList.remove("on"); list.innerHTML="";
+  });
+  input.addEventListener("blur",()=>setTimeout(()=>list.classList.remove("on"),180));
+}
+
+/* ---------- nearest station via geolocation ---------- */
+function nearestStation(){
+  return new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej(new Error("此裝置不支援定位"));
+    navigator.geolocation.getCurrentPosition(p=>{
+      const{latitude:la,longitude:lo}=p.coords;
+      let best=null,bd=1e18;
+      (stations?.list||[]).forEach(s=>{
+        if(s.lat==null||s.lon==null)return;
+        const dx=(s.lat-la),dy=(s.lon-lo)*Math.cos(la*Math.PI/180);
+        const d=dx*dx+dy*dy; if(d<bd){bd=d;best=s;}
+      });
+      best?res(best):rej(new Error("找不到鄰近車站"));
+    },e=>rej(new Error(e.code===1?"定位被拒絕，請到設定開啟定位權限":"定位失敗")),
+    {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+  });
+}
+
+/* ---------- timetable rendering ---------- */
+function typeClass(t){
+  if(/普悠瑪|太魯閣|自強|騰雲/.test(t)) return "tze";
+  if(/莒光|復興/.test(t)) return "chu";
+  if(/區間|區間快/.test(t)) return "local";
+  return "";
+}
+// display label by type: 自強 / 新自強 / 普悠瑪 / 太魯閣 (others: strip brackets)
+function typeDisp(t){
+  t=t||"";
+  if(/太魯閣/.test(t)) return "太魯閣";
+  if(/普悠瑪/.test(t)) return "普悠瑪";
+  if(/新自強|EMU3000|自強.*3000|3000/.test(t)) return "新自強";
+  if(/自強/.test(t)) return "自強";
+  return t.replace(/[（(][^）)]*[）)]/g,"").trim();
+}
+// fare tier of a train type: limited 自強級 / express 莒光級 / local 區間級
+function tierOf(t){
+  t=t||"";
+  if(/普悠瑪|太魯閣|自強|騰雲|3000/.test(t)) return "limited";
+  if(/莒光/.test(t)) return "express";
+  return "local"; // 復興/區間/區間快/普快/普通 皆按區間車票價
+}
+// duration between two HH:mm times, e.g. 20分 / 1時15分
+function fmtDur(dep,arr){
+  const d=toMin(dep),a=toMin(arr);
+  if(d<0||a<0) return "—";
+  let m=a-d; if(m<0) m+=1440;
+  const h=Math.floor(m/60), mm=m%60;
+  if(h&&mm) return h+"時"+mm+"分";
+  if(h) return h+"時";
+  return mm+"分";
+}
+// delay: 準點(0AFF0A) / 02分(<=29 FFDC00) / 30分(>=30 FF5F00); no live data -> —
+function delayCell(d){
+  if(d==null) return '<span class="dly na">—</span>';
+  if(d<=0) return '<span class="dly g">準點</span>';
+  const txt=String(d).padStart(2,"0")+"分";
+  if(d<=29) return '<span class="dly y">'+txt+'</span>';
+  return '<span class="dly o">'+txt+'</span>';
+}
+
+// robust parser: handles v3 (TrainInfo + OriginStopTime/DestinationStopTime),
+// v2 (DailyTrainInfo), and any shape that nests stops in a StopTimes array.
+function parseOD(data){
+  const arr=data&&(data.TrainTimetables||data.TrainTimetable)||(Array.isArray(data)?data:[]);
+  const list=(arr||[]).map(t=>{
+    const info=t.TrainInfo||t.DailyTrainInfo||t;
+    let o=t.OriginStopTime,d=t.DestinationStopTime;
+    if((!o||!d)&&Array.isArray(t.StopTimes)&&t.StopTimes.length>=2){o=t.StopTimes[0];d=t.StopTimes[t.StopTimes.length-1];}
+    o=o||{};d=d||{};
+    return{no:info&&info.TrainNo,type:zh(info&&info.TrainTypeName),
+      dep:o.DepartureTime||o.ArrivalTime,arr:d.ArrivalTime||d.DepartureTime};
+  }).filter(x=>x.no&&x.dep);
+  return{list,raw:(arr||[]).length};
+}
+async function fetchOD(o,d,date){
+  let raw=0;
+  const r3=await api(`/v3/Rail/TRA/DailyTrainTimetable/OD/${o}/to/${d}/${date}?$format=JSON`);
+  let p=parseOD(r3); raw+=p.raw;
+  if(p.list.length) return{list:p.list,raw,ver:"v3"};
+  try{
+    const r2=await api(`/v2/Rail/TRA/DailyTimetable/OD/${o}/to/${d}/${date}?$format=JSON`);
+    let p2=parseOD(r2); raw+=p2.raw;
+    if(p2.list.length) return{list:p2.list,raw,ver:"v2"};
+  }catch(e){/* v2 fallback optional */}
+  return{list:[],raw,ver:"v3+v2"};
+}
+// daily timetable is static per date — cache 6h in memory to avoid repeated fetches
+let odCache={};
+async function fetchODc(o,d,date){
+  const k=o+"-"+d+"-"+date, c=odCache[k];
+  if(c && Date.now()-c.t<6*3600e3) return c.data;
+  const data=await fetchOD(o,d,date);
+  if(data.list.length) odCache[k]={data,t:Date.now()};
+  return data;
+}
+
+function addDays(dstr,n){
+  const [y,mo,da]=dstr.split("-").map(Number);
+  const dt=new Date(Date.UTC(y,mo-1,da)+n*864e5);
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;
+}
+const normCut=m=>m<240?m+1440:m; // times before 04:00 count as the post-midnight tail
+// service day runs 04:00 → next-day 01:00; returns anchor date, next date, and window cutoff (minutes)
+function serviceWindow(){
+  const today=taipeiDate(), now=toMin(taipeiTime());
+  if(queryDate!=null && queryDate!==today)
+    return {anchor:queryDate, next:addDays(queryDate,1), cut:(queryTime!=null?normCut(toMin(queryTime)):240)};
+  if(queryTime!=null)
+    return {anchor:today, next:addDays(today,1), cut:normCut(toMin(queryTime))};
+  if(now<60) return {anchor:addDays(today,-1), next:today, cut:now+1440}; // 00:00–00:59: tail of yesterday
+  return {anchor:today, next:addDays(today,1), cut:now};
+}
+// map a HH:mm departure to a window-minute within [04:00, 25:00], or null if outside
+function winMin(dep){
+  const m=toMin(dep); if(m<0) return null;
+  if(m>=240) return m;          // 04:00–23:59
+  if(m<=60) return m+1440;      // 00:00–01:00 → 24:00–25:00 (post-midnight)
+  return null;                   // 01:00–04:00 dead zone
+}
+async function loadBoard(card,p,dmap){
+  const body=card.querySelector(".board");
+  body.querySelector(".upd").innerHTML='<span class="spin"></span>';
+  try{
+    const w=serviceWindow();
+    const isToday=(w.anchor===taipeiDate()||w.next===taipeiDate());
+    const od=await fetchODc(p.oID,p.dID,w.anchor);
+    if(isToday){ if(!dmap) dmap=await getDelays(); } else dmap={};
+
+    let rows=[];
+    od.list.forEach(x=>{const sm=winMin(x.dep); if(sm!=null&&sm>=w.cut) rows.push({...x,sm});});
+    rows.sort((a,b)=>a.sm-b.sm);
+    // not enough before service-day end → pull next day's early trains (≤01:00)
+    if(rows.length<10){
+      try{
+        const od2=await fetchODc(p.oID,p.dID,w.next);
+        od2.list.forEach(x=>{const m=toMin(x.dep); if(m>=0&&m<=60){const sm=m+1440; if(sm>=w.cut) rows.push({...x,sm});}});
+        const seen=new Set();
+        rows=rows.filter(r=>{const k=r.no+"@"+r.dep; if(seen.has(k))return false; seen.add(k); return true;});
+        rows.sort((a,b)=>a.sm-b.sm);
+      }catch(e){/* tail optional */}
+    }
+    const up=rows.slice(0,10);
+
+    if(!up.length){
+      if(od.list.length) renderMsg(body, queryTime!=null||queryDate!=null ? "該時段已無班次" : "今日已無後續班次");
+      else if(od.raw>0) renderMsg(body,`收到 ${od.raw} 筆資料但無法解析<br><span style='font-size:13px;color:#7e8ba0'>請把這行字回報給我</span>`);
+      else renderMsg(body,`查無 ${p.oName} → ${p.dName} 直達班次<br><span style='font-size:13px;color:#7e8ba0'>(${od.ver}・0 筆・${w.anchor})試試對調起訖站</span>`);
+      return;
+    }
+    renderRows(body,up,dmap);
+  }catch(e){
+    body.querySelector(".upd").textContent="";
+    renderMsg(body,"⚠️ "+(e.message||"讀取失敗")+"<br><span style='font-size:13px;color:#7e8ba0'>點下方更新鈕重試</span>");
+  }
+}
+const CLOCK_SVG='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+const MENU_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
+const CHEV_SVG='<svg viewBox="0 0 34 24" width="32" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l6 6-6 6"></path><path d="M13 6l6 6-6 6"></path><path d="M22 6l6 6-6 6"></path></svg>';
+const DRAG_SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
+const WD=["日","一","二","三","四","五","六"];
+function dateLabelShort(dstr){
+  if(!dstr||dstr===taipeiDate()) return "今天";
+  const [y,mo,da]=dstr.split("-").map(Number);
+  const w=new Date(Date.UTC(y,mo-1,da)).getUTCDay();
+  return `${String(mo).padStart(2,"0")}.${String(da).padStart(2,"0")}(${WD[w]})`;
+}
+function buildDateOptions(){
+  const sel=$("#inDate"); sel.innerHTML="";
+  const [Y,M,D]=taipeiDate().split("-").map(Number);
+  const base=Date.UTC(Y,M-1,D);
+  for(let i=0;i<=28;i++){
+    const dt=new Date(base+i*864e5);
+    const val=`${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;
+    const label=i===0?"今天":`${String(dt.getUTCMonth()+1).padStart(2,"0")}.${String(dt.getUTCDate()).padStart(2,"0")}(${WD[dt.getUTCDay()]})`;
+    const o=document.createElement("option"); o.value=val; o.textContent=label; sel.appendChild(o);
+  }
+}
+function topBar(){
+  const futureDate = queryDate!=null && queryDate!==taipeiDate();
+  const custom = queryTime!=null || futureDate;
+  let txt;
+  if(custom){
+    const dl = futureDate ? dateLabelShort(queryDate)+" " : "";
+    txt = dl + (queryTime||taipeiTime()) + " 起";
+  } else txt = "更新 "+taipeiTime();
+  return `<div class="board-top"><span class="ttl">最近 10 班</span>
+    <div class="board-top-r"><span class="upd${custom?' custom':''}">${txt}</span>
+    <button class="clockbtn${custom?' on':''}" aria-label="查詢時間">${CLOCK_SVG}</button></div></div>`;
+}
+function boardShell(){
+  return topBar()+`<div class="board-scroll"><div class="tlist"></div></div>`;
+}
+function renderRows(board,rows,dmap){
+  let html=topBar()+`<div class="board-scroll"><div class="tlist">`;
+  rows.forEach(r=>{
+    const xm = r.sm>=1440 ? ' xmid' : '';
+    html+=`<div class="trow">
+      <div class="tleft">
+        <div class="no">${r.no}</div>
+        <div class="ty"><span class="type ${typeClass(r.type)}">${typeDisp(r.type)||"—"}</span></div>
+      </div>
+      <div class="tmid">
+        <span class="dep${xm}">${r.dep||"—"}</span><span class="arr${xm}">${r.arr||"—"}</span>
+      </div>
+      <div class="tright">
+        <span class="dur">${fmtDur(r.dep,r.arr)}</span>
+        <span>${delayCell(dmap[r.no])}</span>
+      </div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  board.innerHTML=html;
+}
+function renderMsg(board,m){
+  board.innerHTML=topBar()+`<div class="board-msg">${m}</div>`;
+}
+
+/* ---------- build cards ---------- */
+function buildCards(){
+  const wrap=$("#panels"); wrap.innerHTML="";
+  presets.forEach((p,i)=>{
+    const c=document.createElement("section");
+    c.className="card"; c.dataset.i=i;
+    c.innerHTML=`<div class="card-head">
+        <button class="card-menu" data-menu="${i}" aria-label="選單">${MENU_SVG}</button>
+        <div class="route"><span class="sta">${p.oName}</span><span class="chev">${CHEV_SVG}</span><span class="sta">${p.dName}</span></div>
+      </div>
+      <div class="board">${boardShell()}</div>`;
+    wrap.appendChild(c);
+  });
+  buildDots();
+  refreshAll();
+  updateView();
+}
+function buildDots(){
+  const d=$("#dots"); d.innerHTML="";
+  presets.forEach((_,i)=>{const s=document.createElement("div");s.className="d"+(i===0?" on":"");d.appendChild(s);});
+}
+function updateView(){
+  const has=presets.length>0;
+  $("#empty").classList.toggle("on",!has);
+  $("#panels").style.display=has?"flex":"none";
+  $("#dots").style.visibility=has?"visible":"hidden";
+}
+function activeIndex(){
+  const w=$("#panels");return Math.round(w.scrollLeft/w.clientWidth);
+}
+$("#panels").addEventListener("scroll",()=>{
+  const i=activeIndex();
+  document.querySelectorAll("#dots .d").forEach((d,k)=>d.classList.toggle("on",k===i));
+},{passive:true});
+
+let refreshing=false;
+async function refreshAll(){
+  if(refreshing) return;            // 避免重複併發整批查詢
+  refreshing=true;
+  try{
+    const cards=[...document.querySelectorAll(".card")];
+    const dmap = (queryDate==null) ? await getDelays() : {}; // 查未來日期不需即時誤點
+    for(let k=0;k<cards.length;k++){
+      await loadBoard(cards[k],presets[k],dmap);   // 全域節流已負責間隔
+    }
+  } finally { refreshing=false; }
+}
+
+/* ---------- refresh button: also returns to real time ---------- */
+$("#btnRefresh").addEventListener("click",async()=>{
+  const b=$("#btnRefresh"); b.classList.add("busy");
+  queryTime=null; queryDate=null;   // 回到即時（今天 + 現在）
+  try{ await refreshAll(); } finally{ b.classList.remove("busy"); }
+});
+
+/* ---------- time/date query (clock icon on each board) ---------- */
+$("#panels").addEventListener("click",e=>{
+  if(!e.target.closest(".clockbtn"))return;
+  buildDateOptions();
+  $("#inDate").value = queryDate || taipeiDate();
+  $("#inTime").value = queryTime || taipeiTime();
+  openSheet("timeSheet");
+});
+$("#btnTimeApply").addEventListener("click",async()=>{
+  const dv=$("#inDate").value, tv=$("#inTime").value;
+  queryDate = (dv && dv!==taipeiDate()) ? dv : null;
+  queryTime = tv || null;
+  closeSheets(); await refreshAll();
+});
+
+/* ---------- route switcher (long-press the dots) ---------- */
+function buildRouteList(){
+  const L=$("#routeList"); L.innerHTML="";
+  const cur=activeIndex();
+  presets.forEach((p,i)=>{
+    const el=document.createElement("div");
+    el.className="route-item"+(i===cur?" current":"");
+    el.dataset.idx=i;
+    el.innerHTML=`<span class="ri-grip">${DRAG_SVG}</span><span class="ri-name">${p.oName}<span class="ri-arrow">›</span>${p.dName}</span>`;
+    L.appendChild(el);
+  });
+}
+function openRouteList(){ if(!presets.length)return; buildRouteList(); openSheet("routeSheet"); }
+function goToCard(i){
+  closeSheets();
+  requestAnimationFrame(()=>$("#panels").scrollTo({left:i*$("#panels").clientWidth,behavior:"smooth"}));
+}
+// reorder existing cards (no refetch) to match a new sequence of old indices
+function applyReorder(order){
+  presets=order.map(i=>presets[i]);
+  setJSON(LS.presets,presets);
+  const wrap=$("#panels"); const cards=[...wrap.children];
+  order.forEach(oldI=>wrap.appendChild(cards[oldI]));
+  [...wrap.children].forEach((c,i)=>{c.dataset.i=i;const mb=c.querySelector("[data-menu]");if(mb)mb.dataset.menu=i;});
+  buildDots();
+}
+(function routeDrag(){
+  const L=()=>$("#routeList");
+  let timer=null,el=null,startY=0,moved=false,dragging=false;
+  function reset(){clearTimeout(timer);el=null;moved=false;dragging=false;}
+  L().addEventListener("pointerdown",e=>{
+    const it=e.target.closest(".route-item"); if(!it)return;
+    el=it; startY=e.clientY; moved=false; dragging=false;
+    timer=setTimeout(()=>{dragging=true; it.classList.add("dragging"); if(navigator.vibrate)navigator.vibrate(15);},300);
+  });
+  L().addEventListener("pointermove",e=>{
+    if(!el)return;
+    if(Math.abs(e.clientY-startY)>8) moved=true;
+    if(!dragging){ if(moved) reset(); return; }
+    e.preventDefault();
+    const sibs=[...L().querySelectorAll(".route-item:not(.dragging)")];
+    let target=null;
+    for(const s of sibs){const r=s.getBoundingClientRect(); if(e.clientY < r.top+r.height/2){target=s;break;}}
+    if(target) L().insertBefore(el,target); else L().appendChild(el);
+  });
+  function up(){
+    if(!el){return;}
+    if(dragging){
+      el.classList.remove("dragging");
+      const order=[...L().querySelectorAll(".route-item")].map(x=>+x.dataset.idx);
+      applyReorder(order); buildRouteList();
+    }else if(!moved){
+      goToCard(+el.dataset.idx);
+    }
+    reset();
+  }
+  L().addEventListener("pointerup",up);
+  L().addEventListener("pointercancel",reset);
+})();
+// long-press the dots to open the switcher
+(function dotsPress(){
+  const d=$("#dots"); let t=null;
+  d.addEventListener("pointerdown",()=>{t=setTimeout(()=>{openRouteList(); if(navigator.vibrate)navigator.vibrate(15);},380);});
+  ["pointerup","pointermove","pointercancel","pointerleave"].forEach(ev=>d.addEventListener(ev,()=>clearTimeout(t)));
+})();
+
+/* ---------- add / edit sheet ---------- */
+let editIndex=null;
+function openSheet(id){$("#"+id).classList.add("on");}
+function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("on"));}
+document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",closeSheets));
+
+async function openAdd(edit=null){
+  $("#addErr").textContent="";
+  editIndex=edit;
+  $("#addTitle").textContent=edit!=null?"編輯路線":"新增路線";
+  $("#inO").value=edit!=null?presets[edit].oName:"";
+  $("#inD").value=edit!=null?presets[edit].dName:"";
+  openSheet("addSheet");
+  try{ await ensureStations(); }catch(e){ $("#addErr").textContent="車站清單載入失敗："+e.message; }
+}
+// enable custom station dropdowns
+attachAutocomplete($("#inO"));
+attachAutocomplete($("#inD"));
+$("#btnAdd").addEventListener("click",()=>{
+  if(presets.length>=10){alert("最多只能儲存 10 組路線");return;}
+  openAdd();
+});
+$("#emptyAdd").addEventListener("click",()=>openAdd());
+$("#btnSwap").addEventListener("click",()=>{const a=$("#inO").value;$("#inO").value=$("#inD").value;$("#inD").value=a;});
+
+$("#btnLoc").addEventListener("click",async()=>{
+  if(Date.now()-acPickedAt<600) return; // ignore click that fell through from the dropdown
+  $("#addErr").textContent="定位中…";
+  try{ await ensureStations(); const s=await nearestStation(); $("#inO").value=s.name; $("#addErr").textContent="已設定最近車站："+s.name; }
+  catch(e){ $("#addErr").textContent=e.message; }
+});
+
+$("#btnSavePreset").addEventListener("click",()=>{
+  if(Date.now()-acPickedAt<600) return; // ignore stray click from dropdown selection
+  const o=staByName($("#inO").value.trim()), d=staByName($("#inD").value.trim());
+  if(!o||!d){$("#addErr").textContent="請從建議清單選擇正確的台鐵車站名";return;}
+  if(o.id===d.id){$("#addErr").textContent="起站與到站不能相同";return;}
+  const item={oID:o.id,oName:o.name,dID:d.id,dName:d.name};
+  if(editIndex!=null) presets[editIndex]=item; else presets.push(item);
+  setJSON(LS.presets,presets); closeSheets(); buildCards();
+  // jump to the card
+  requestAnimationFrame(()=>{const idx=editIndex!=null?editIndex:presets.length-1;$("#panels").scrollTo({left:idx*$("#panels").clientWidth,behavior:"smooth"});});
+});
+
+/* empty-state locate-and-create */
+$("#emptyLoc").addEventListener("click",async()=>{
+  try{ await ensureStations(); const s=await nearestStation(); await openAdd(); $("#inO").value=s.name; $("#addErr").textContent="起站已設為 "+s.name+"，請選擇到站"; }
+  catch(e){ alert(e.message); }
+});
+
+/* ---------- card menu ---------- */
+let menuIndex=null;
+$("#panels").addEventListener("click",e=>{
+  const b=e.target.closest("[data-menu]"); if(!b)return;
+  menuIndex=+b.dataset.menu; openSheet("menuSheet");
+});
+$("#mEdit").addEventListener("click",()=>{closeSheets();openAdd(menuIndex);});
+$("#mSwap").addEventListener("click",()=>{
+  const p=presets[menuIndex];
+  presets[menuIndex]={oID:p.dID,oName:p.dName,dID:p.oID,dName:p.oName};
+  setJSON(LS.presets,presets);closeSheets();buildCards();
+});
+$("#mDelete").addEventListener("click",()=>{
+  if(!confirm("確定刪除「"+presets[menuIndex].oName+" › "+presets[menuIndex].dName+"」?"))return;
+  presets.splice(menuIndex,1);setJSON(LS.presets,presets);closeSheets();buildCards();
+});
+$("#mSettings").addEventListener("click",()=>{closeSheets();showSetup();});
+
+/* ---------- setup screen ---------- */
+function showSetup(){
+  const c=getCreds();
+  $("#inId").value=c?c.clientId:""; $("#inSecret").value=c?c.clientSecret:"";
+  $("#setupErr").textContent="";
+  $("#main").classList.remove("on"); $("#setup").classList.add("on");
+}
+function showMain(){ $("#setup").classList.remove("on"); $("#main").classList.add("on"); buildCards(); }
+$("#btnSaveCreds").addEventListener("click",async()=>{
+  const id=$("#inId").value.trim(), sec=$("#inSecret").value.trim();
+  if(!id||!sec){$("#setupErr").textContent="請填入 Client ID 與 Secret";return;}
+  $("#setupErr").innerHTML='<span class="spin"></span> 驗證中…';
+  setJSON(LS.creds,{clientId:id,clientSecret:sec}); localStorage.removeItem(LS.token);
+  try{ await getToken(); await ensureStations(); $("#setupErr").textContent=""; showMain(); }
+  catch(e){ $("#setupErr").textContent=e.message; }
+});
+
+/* ---------- boot ---------- */
+(function boot(){
+  if(getCreds()) showMain(); else showSetup();
+  // auto refresh when app comes back to foreground
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&$("#main").classList.contains("on")&&presets.length) refreshAll(); });
+})();
+
+/* ---------- PWA manifest (inline) ---------- */
+const manifest={name:"台鐵時刻",short_name:"台鐵時刻",display:"standalone",background_color:"#0d1626",
+  theme_color:"#0d1626",icons:[{src:document.querySelector('link[rel=apple-touch-icon]').href,sizes:"180x180",type:"image/png"}]};
+const ml=document.createElement("link"); ml.rel="manifest";
+ml.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/json"}));
+document.head.appendChild(ml);
+</script>
+</body>
+</html>
